@@ -12,7 +12,7 @@ body {
 	margin: 0;
   position:flex;
 
-  /* fix overflow-x */
+  /* fix overflow */
   overflow-x: hidden;
 }
 ul, li {
@@ -33,7 +33,9 @@ a img{
 }
 h1, h2, h3, h4, h5, h6 {
   font-family: Arial, Helvetica, sans-serif;
-  margin: 0 0 20px;
+
+  /* fix margin */
+  margin: 0 0 1.5em;
 }
 article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
   display: block;
@@ -47,17 +49,26 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   color: #aaa;
   font-size: 8pt;
   letter-spacing: 1px;
-  padding: 25px;
   text-align: center;
   text-transform: uppercase;
+
+  /* fix padding */
+  padding: 2em;
+}
+
+/* fix box-sizing */
+* {
+  box-sizing: border-box;
 }
 
 /* ====================== Navigation ====================== */
 nav {
   width: 100%;
-  height: 80px;
   background-color: #252831;
   text-align:center;
+
+  /* fix height */
+  height: 6em;
 }
 nav h1 {
   margin: auto;
@@ -75,24 +86,28 @@ nav h1 a {
   text-transform: uppercase;
 }
 #breadcrumb {
-    padding: 10px 40px 16px;
-    list-style: none;
-    background-color: #eee;
-    font-size: 17px;
-    margin: 0;
-    width: calc(50% - 80px);
+  padding: 10px 40px 16px;
+  list-style: none;
+  background-color: #eee;
+  font-size: 17px;
+  margin: 0;
+
+  /* fix width */
+  width: 50%;
 }
 
 /* Display list items side by side */
 #breadcrumb li {
-    display: inline;
+  display: inline;
 }
 
 /* Add a slash symbol (/) before/behind each list item */
 #breadcrumb li+li:before {
-    padding: 8px;
     color: black;
     content: "/\00a0";
+
+    /* fix padding */
+    padding: 0.5em;
 }
 
 /* Add a color to all links inside the list */
@@ -108,15 +123,16 @@ nav h1 a {
 }
 /* ====================== Map ====================== */
 #map {
-  height: 400px;
   width: 100%;
   background-color: #ccc;
+
+  /* fix height */
+  height: 30em;
 }
 /* ====================== Restaurant Filtering ====================== */
 .filter-options {
 
   width: 100%;
-  height: 50px;
   background-color: #3397DB;
   align-items: center;
 
@@ -127,7 +143,8 @@ nav h1 a {
   overflow: hidden;
   box-sizing: border-box;
 
-  /* add padding */
+  /* add height padding */
+  height: 4em;
   padding: 1em;
 }
 
@@ -136,9 +153,9 @@ nav h1 a {
   font-size: 1rem;
   font-weight: normal;
   line-height: 1;
-  margin: 0 20px;
 
-  /* make inline and centered */
+  /* make inline and centered, fix margin */
+  margin: 0 1.5em;
   display: inline-block;
   text-align: center;
 }
@@ -147,10 +164,12 @@ nav h1 a {
   border: 1px solid #fff;
   font-family: Arial,sans-serif;
   font-size: 11pt;
-  height: 35px;
   letter-spacing: 0;
-  margin: 10px;
-  padding: 0 10px;
+
+  /* fix height, margin and padding */
+  height: 3em;
+  margin: 1em;
+  padding: 0 1em;
 
   /* remove width and set flex 1 */
   flex:1;
@@ -158,7 +177,7 @@ nav h1 a {
 }
 
 /* add breakpoint for .filter-options */
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 37em) {
   .filter-options {
     height: auto;
     flex-direction: column;
@@ -188,8 +207,8 @@ nav h1 a {
   display: inline-block;
   margin: 1em;
   min-height: 28em;
-  padding: 0 2em 1.5em;
-  min-width: 20em;
+  padding: 1.5em 2em 1.5em;
+  min-width: 25em;
   width: calc((100% - 30em) / 3);
 }
 
@@ -218,8 +237,9 @@ nav h1 a {
   display: block;
   margin: 0;
   max-width: 100%;
-  min-height: 248px;
   min-width: 100%;
+
+  /* removed min height */
 }
 #restaurants-list li h1 {
   color: #f18200;
@@ -228,8 +248,10 @@ nav h1 a {
   font-weight: 200;
   letter-spacing: 0;
   line-height: 1.3;
-  margin: 20px 0 10px;
   text-transform: uppercase;
+
+  /* fix margin */
+  margin: 1.5em 0 1em;
 }
 #restaurants-list p {
   margin: 0;
@@ -241,11 +263,13 @@ nav h1 a {
   color: #fff;
   display: inline-block;
   font-size: 10pt;
-  margin: 15px 0 0;
-  padding: 8px 30px 10px;
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
+
+  /* fix margin and padding */
+  margin: 1em 0 0;
+  padding: 0.5em 2em 1em;
 }
 
 /* ====================== Restaurant Details ====================== */
@@ -260,8 +284,10 @@ nav h1 a {
   height: 87%;
   position: fixed;
   right: 0;
-  top: 80px;
   width: 50%;
+
+  /* fix top */
+  top: 6em;
 }
 .inside #map {
   background-color: #ccc;
@@ -270,8 +296,10 @@ nav h1 a {
 }
 .inside #footer {
   bottom: 0;
-  position: absolute;
   width: 50%;
+
+  /* fix position */
+  position: fixed;
 }
 #restaurant-name {
   color: #f18200;
@@ -279,16 +307,21 @@ nav h1 a {
   font-size: 20pt;
   font-weight: 200;
   letter-spacing: 0;
-  margin: 15px 0 30px;
   text-transform: uppercase;
   line-height: 1.1;
+
+  /* fix margin */
+  margin: 1em 0 2em;
 }
 #restaurant-img {
-	width: 90%;
+  /* fix width */
+	width: 100%;
 }
 #restaurant-address {
   font-size: 12pt;
-  margin: 10px 0px;
+
+  /* fix margin */
+  margin: 1em 0px;
 }
 #restaurant-cuisine {
   background-color: #333;
@@ -300,16 +333,21 @@ nav h1 a {
   padding: 2px 0;
   text-align: center;
   text-transform: uppercase;
-	width: 90%;
+
+  /* fix width */
+	width: 100%;
 }
 #restaurant-container, #reviews-container {
   border-bottom: 1px solid #d9d9d9;
   border-top: 1px solid #fff;
-  padding: 140px 40px 30px;
   width: 50%;
+
+  /* fix padding */
+  padding: 10em 2.5em 2em;
 }
 #reviews-container {
-  padding: 30px 40px 80px;
+  /* fix padding */
+  padding: 2em 2.5em 5em;
 }
 #reviews-container h2 {
   color: #f58500;
@@ -327,15 +365,40 @@ nav h1 a {
     border: 2px solid #f3f3f3;
   display: block;
   list-style-type: none;
-  margin: 0 0 30px;
+
   overflow: hidden;
-  padding: 0 20px 20px;
+
   position: relative;
-  width: 85%;
+
+  /* fix width and padding */
+  width: 100%;
+  padding: 1em;
+  margin: 0 0 2em;
 }
 #reviews-list li p {
-  margin: 0 0 10px;
+  /* fix margin */
+  margin: 0 0 0.5em;
 }
 #restaurant-hours td {
   color: #666;
+}
+
+/* add breakpoint */
+@media screen and (max-width: 41em) {
+  #breadcrumb,
+  .inside #map-container,
+  #restaurant-container, #reviews-container,
+  .inside #footer
+  {
+    width: 100%;
+  }
+
+  .inside #map-container {
+    position: relative;
+    height: 30em;
+  }
+
+  #restaurant-container {
+    padding-top: 2em;
+  }
 }
