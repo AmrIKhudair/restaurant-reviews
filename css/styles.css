@@ -11,6 +11,9 @@ body {
 	background-color: #fdfdfd;
 	margin: 0;
   position:flex;
+
+  /* fix overflow-x */
+  overflow-x: hidden;
 }
 ul, li {
 	font-family: Arial, Helvetica, sans-serif;
@@ -33,7 +36,7 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0 0 20px;
 }
 article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
-	display: block;
+  display: block;
 }
 #maincontent {
   background-color: #f3f3f3;
@@ -48,6 +51,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   text-align: center;
   text-transform: uppercase;
 }
+
 /* ====================== Navigation ====================== */
 nav {
   width: 100%;
@@ -134,8 +138,9 @@ nav h1 a {
   line-height: 1;
   margin: 0 20px;
 
-  /* make inline */
+  /* make inline and centered */
   display: inline-block;
+  text-align: center;
 }
 .filter-options select {
   background-color: white;
@@ -153,14 +158,13 @@ nav h1 a {
 }
 
 /* add breakpoint for .filter-options */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 500px) {
   .filter-options {
     height: auto;
     flex-direction: column;
   }
   .filter-options > * {
-    display: block;
-    width: 100% !important;
+    width: 100%;
   }
 }
 
@@ -169,19 +173,46 @@ nav h1 a {
   background-color: #f3f3f3;
   list-style: outside none none;
   margin: 0;
-  padding: 30px 15px 60px;
   text-align: center;
+
+  /* convert padding to em */
+  padding: 2em 1em 4em;
 }
 #restaurants-list li {
   background-color: #fff;
   border: 2px solid #ccc;
   font-family: Arial,sans-serif;
-  margin: 15px;
-  min-height: 380px;
-  padding: 0 30px 25px;
   text-align: left;
-  width: 270px;
+
+  /* fix display and convert to em */
+  display: inline-block;
+  margin: 1em;
+  min-height: 28em;
+  padding: 0 2em 1.5em;
+  min-width: 20em;
+  width: calc((100% - 30em) / 3);
 }
+
+/* add breakpoints for #restaurant-list */
+@media screen and (max-width: 1136px) {
+  #restaurants-list li {
+    width: calc((100% - 20em) / 2);
+  }
+}
+@media screen and (max-width: 57em) {
+  #restaurants-list li {
+    width: calc(100% - 10em);
+    margin: 1em auto;
+  }
+}
+@media screen and (max-width: 30em) {
+  #restaurants-list {
+    padding-left: 0;
+    padding-right: 0;
+    margin: 1em auto;
+  }
+}
+
 #restaurants-list .restaurant-img {
   background-color: #ccc;
   display: block;
