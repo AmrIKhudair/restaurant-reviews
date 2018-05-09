@@ -24,14 +24,14 @@
       <!-- exclude map from tab indexing -->
       <div id="map" tabindex="-1"></div>
     </section>
-    <!-- added label to section -->
+    <!-- added label to section and selects -->
     <section aria-label="Filter Results">
       <div class="filter-options">
         <h2>Filter Results</h2>
-        <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()">
+        <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()" aria-label="Neighbourhood">
           <option value="all">All Neighborhoods</option>
         </select>
-        <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()">
+        <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()" aria-label="Cuisine">
           <option value="all">All Cuisines</option>
         </select>
       </div>
