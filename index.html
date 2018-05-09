@@ -19,10 +19,13 @@
   </header>
 
   <main id="maincontent">
-    <section id="map-container">
-      <div id="map"></div>
+    <!-- hide map from ARIA and tabindexing -->
+    <section aria-hidden="true" tabindex="-1" id="map-container">
+      <!-- exclude map from tab indexing -->
+      <div id="map" tabindex="-1"></div>
     </section>
-    <section>
+    <!-- added label to section -->
+    <section aria-label="Filter Results">
       <div class="filter-options">
         <h2>Filter Results</h2>
         <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()">
