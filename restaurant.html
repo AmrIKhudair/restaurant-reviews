@@ -20,10 +20,12 @@
     <nav>
       <h1><a href="/">Restaurant Reviews</a></h1>
     </nav>
-    <!-- Beginning breadcrumb -->
-    <ul id="breadcrumb" >
-      <li><a href="/">Home</a></li>
-    </ul>
+    <!-- Beginning breadcrumb ADDED: nav wrapping as recommended by WAI-ARIA -->
+    <nav aria-label="Breadcrumb" id="breadcrumb">
+      <ul>
+        <li><a href="/">Home</a></li>
+      </ul>
+    </nav>
     <!-- End breadcrumb -->
     <!-- End nav -->
   </header>

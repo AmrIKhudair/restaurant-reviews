@@ -62,7 +62,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 }
 
 /* ====================== Navigation ====================== */
-nav {
+nav:first-child {
   width: 100%;
   background-color: #252831;
   text-align:center;
@@ -70,7 +70,7 @@ nav {
   /* fix height */
   height: 6em;
 }
-nav h1 {
+nav:first-child h1 {
   margin: auto;
 
   /* center vertically */
@@ -78,7 +78,7 @@ nav h1 {
   top: 50%;
   transform: translateY(-50%);
 }
-nav h1 a {
+nav:first-child h1 a {
   color: #fff;
   font-size: 14pt;
   font-weight: 200;
@@ -86,14 +86,20 @@ nav h1 a {
   text-transform: uppercase;
 }
 #breadcrumb {
-  padding: 10px 40px 16px;
-  list-style: none;
   background-color: #eee;
   font-size: 17px;
   margin: 0;
 
-  /* fix width */
+  /* fix width and padding */
   width: 50%;
+  padding: 1em 2.5em 1em;
+}
+
+/* add semantics */
+#breadcrumb > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 /* Display list items side by side */
