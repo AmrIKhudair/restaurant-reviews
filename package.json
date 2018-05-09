@@ -12,7 +12,8 @@
     "merge-stream": "^1.0.1"
   },
   "scripts": {
-    "build": "gulp images"
+    "build": "gulp images",
+    "clean": "rm img/*.jpg"
   },
   "repository": {
     "type": "git",
