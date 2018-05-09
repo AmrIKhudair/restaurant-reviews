@@ -10,7 +10,9 @@ const convert = width => gulp.src("img-src/*.jpg")
     .pipe(rename(path => path.basename += '-' + width + 'w'))
     .pipe(gulp.dest('img'));
 
-gulp.task(
-    'images',
-    () => merge(convert(100), convert(200), convert(400), convert(800))
-);
+gulp.task('images', () => {
+    const streams = [];
+    for (let width = 300; width <= 800; width += 100)
+        streams.push(convert(width));
+    return merge.apply(null, streams);
+});

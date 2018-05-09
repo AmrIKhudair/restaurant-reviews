@@ -146,7 +146,7 @@ createRestaurantHTML = (restaurant) => {
     dot = src.lastIndexOf('.'),
     srcset = [];
 
-  for (let width = 100; width <= 800; width *= 2)
+  for (let width = 300 ; width <= 800; width += 100)
     srcset.push(`${src.slice(0,dot)}-${width}w.${src.slice(dot+1)} ${width}w`);
 
   image.srcset = srcset.join(', ');
