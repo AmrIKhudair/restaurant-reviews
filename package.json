@@ -1,0 +1,27 @@
+{
+  "name": "mws-restaurant-stage-1",
+  "version": "1.0.0",
+  "description": "--- #### _Three Stage Course Material Project - Restaurant Reviews_",
+  "main": "",
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-image-resize": "^0.13.0",
+    "gulp-imagemin": "^4.1.0",
+    "gulp-rename": "^1.2.2",
+    "merge-stream": "^1.0.1"
+  },
+  "scripts": {
+    "build": "gulp images"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AmrIKhudair-MWS/mws-restaurant-stage-1.git"
+  },
+  "author": "Amr Ibrahim Khudair",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AmrIKhudair-MWS/mws-restaurant-stage-1/issues"
+  },
+  "homepage": "https://github.com/AmrIKhudair-MWS/mws-restaurant-stage-1#readme"
+}
