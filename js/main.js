@@ -140,16 +140,10 @@ createRestaurantHTML = (restaurant) => {
 
   const image = document.createElement('img');
   image.className = 'restaurant-img';
+  image.src = DBHelper.imageUrlForRestaurant(restaurant);
 
   /* img srcset and sizes */
-  const src = image.src = DBHelper.imageUrlForRestaurant(restaurant),
-    dot = src.lastIndexOf('.'),
-    srcset = [];
-
-  for (let width = 300 ; width <= 800; width += 100)
-    srcset.push(`${src.slice(0,dot)}-${width}w.${src.slice(dot+1)} ${width}w`);
-
-  image.srcset = srcset.join(', ');
+  image.srcset = DBHelper.imageSrcsetForRestaurant(restaurant);
   image.sizes = "(max-width: 57em) calc(100vw - 10em), (max-width: 84em) calc((100vw - 20em) / 2), calc((100vw - 30em) / 3)"
 
   li.append(image);

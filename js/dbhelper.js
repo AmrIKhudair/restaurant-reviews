@@ -147,11 +147,34 @@ class DBHelper {
   }
 
   /**
+   * Restaurant image url for specific width
+   */
+
+   static _widthFile(filename, width) {
+    const dot = filename.lastIndexOf('.');
+
+    return `/img/${filename.slice(0,dot)}-${width}w.${filename.slice(dot+1)}`;
+   }
+
+  /**
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`/img/${restaurant.photograph}`);
+    return DBHelper._widthFile(restaurant.photograph,800);
   }
+
+  /**
+   * Resturant image srcset
+   */
+
+   static imageSrcsetForRestaurant(restaurant) {
+    const srcset = [];
+
+    for (let width = 300 ; width <= 800; width += 100)
+      srcset.push(`${DBHelper._widthFile(restaurant.photograph,width)} ${width}w`);
+
+    return srcset.join(', ');
+   }
 
   /**
    * Map marker for a restaurant.
