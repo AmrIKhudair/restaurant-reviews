@@ -6,6 +6,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- add web app manifest -->
+  <link rel="manifest" href="manifest.json">
+
   <!-- Normalize.css for better cross-browser consistency, DONE: fix src to href -->
   <link rel="stylesheet" href="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
   <!-- Main CSS file -->
@@ -34,18 +37,23 @@
   <!-- Beginning main -->
   <main id="maincontent">
     <!-- Beginning map -->
-    <!-- hide map from aria and tab indexing -->
-    <section aria-hidden="true" tabindex="-1" id="map-container">
+    <!-- hide map from ARIA  -->
+    <section aria-hidden="true" id="map-container">
+      <!-- skip map controls -->
+      <a id="skipMap" href="#restaurant-container" aria-hidden="true">Skip map controls</a>
+
       <div id="map"></div>
     </section>
     <!-- End map -->
     <!-- ADDED: Labels to sections -->
     <!-- Beginning restaurant -->
-    <section aria-labelledby="restaurant-name" id="restaurant-container">
+    <!-- give tabindex for keyboard scrolling not to be overtaken by the map -->
+    <section aria-labelledby="restaurant-name" tabindex="0" id="restaurant-container">
       <h1 id="restaurant-name"></h1>
       <img src="" id="restaurant-img">
       <p id="restaurant-cuisine"></p>
       <p id="restaurant-address"></p>
+      <!-- addded aria label -->
       <table id="restaurant-hours" aria-label="Restaurant Hours"></table>
     </section>
     <!-- end restaurant -->

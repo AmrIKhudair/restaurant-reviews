@@ -411,3 +411,16 @@ nav:first-child h1 a {
     height: 30em;
   }
 }
+
+/* skip map */
+#skipMap {
+  position: absolute;
+  background: lightgreen;
+  padding:1em;
+  border-bottom-right-radius: 1em;
+  outline: none;
+}
+
+#skipMap:focus {
+  z-index: 999999;
+}

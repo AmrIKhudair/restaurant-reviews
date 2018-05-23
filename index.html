@@ -6,6 +6,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- add web app manifest -->
+  <link rel="manifest" href="manifest.json">
+
   <link rel="stylesheet" href="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
   <link rel="stylesheet" href="css/styles.css">
   <title>Restaurant Reviews</title>
@@ -19,14 +22,16 @@
   </header>
 
   <main id="maincontent">
-    <!-- hide map from ARIA and tabindexing -->
-    <section aria-hidden="true" tabindex="-1" id="map-container">
-      <!-- exclude map from tab indexing -->
+    <!-- hide map from ARIA -->
+    <section aria-hidden="true" id="map-container">
+      <!-- skip map controls -->
+      <a id="skipMap" href="#restaurants" aria-hidden="true">Skip map controls</a>
+
       <div id="map"></div>
     </section>
     <!-- added label to section and selects -->
-    <section aria-label="Filter Results">
-      <div class="filter-options">
+    <section id="restaurants" aria-label="Restaurants">
+      <aside class="filter-options" aria-label="Filter Restaurants">
         <h2>Filter Results</h2>
         <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()" aria-label="Neighbourhood">
           <option value="all">All Neighborhoods</option>
@@ -34,7 +39,7 @@
         <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()" aria-label="Cuisine">
           <option value="all">All Cuisines</option>
         </select>
-      </div>
+      </aside>
       <ul id="restaurants-list"></ul>
     </section>
   </main>
