@@ -25,9 +25,9 @@
     <!-- hide map from ARIA -->
     <section aria-hidden="true" id="map-container">
       <!-- skip map controls -->
-      <a id="skipMap" href="#restaurants" aria-hidden="true">Skip map controls</a>
-
-      <div id="map"></div>
+      <a id="skipMap" href="#restaurants">Skip map controls</a>
+      <!-- fix: add application role -->
+      <div id="map" role="application"></div>
     </section>
     <!-- added label to section and selects -->
     <section id="restaurants" aria-label="Restaurants">

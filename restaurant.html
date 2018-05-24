@@ -40,16 +40,17 @@
     <!-- hide map from ARIA  -->
     <section aria-hidden="true" id="map-container">
       <!-- skip map controls -->
-      <a id="skipMap" href="#restaurant-container" aria-hidden="true">Skip map controls</a>
-
-      <div id="map"></div>
+      <a id="skipMap" href="#restaurant-container">Skip map controls</a>
+      <!-- fix: add application role -->
+      <div id="map" role="application"></div>
     </section>
     <!-- End map -->
     <!-- ADDED: Labels to sections -->
     <!-- Beginning restaurant -->
     <!-- give tabindex for keyboard scrolling not to be overtaken by the map -->
     <section aria-labelledby="restaurant-name" tabindex="0" id="restaurant-container">
-      <h1 id="restaurant-name"></h1>
+      <!-- fix: heading rank -->
+      <h2 id="restaurant-name"></h1>
       <img src="" id="restaurant-img">
       <p id="restaurant-cuisine"></p>
       <p id="restaurant-address"></p>
