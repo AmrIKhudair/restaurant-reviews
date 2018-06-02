@@ -1,7 +1,7 @@
 const gulp = require('gulp'),
     resize = require('gulp-image-resize'),
     imagemin = require('gulp-imagemin'),
-    rename = require('gulp-rename')
+    rename = require('gulp-rename'),
     merge = require('merge-stream');
 
 const convert = width => gulp.src("img-src/*.jpg")

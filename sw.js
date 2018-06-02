@@ -12,7 +12,7 @@ self.addEventListener('install', e => {
     ];
 
     e.waitUntil( caches.open('cache-v1').then( cache => cache.addAll(resources) ) );
-})
+});
 
 /* Hijacking fetch requests */
 self.addEventListener('fetch', e => e.respondWith(
