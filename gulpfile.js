@@ -2,7 +2,8 @@ const gulp = require('gulp'),
     resize = require('gulp-image-resize'),
     imagemin = require('gulp-imagemin'),
     rename = require('gulp-rename'),
-    merge = require('merge-stream');
+    merge = require('merge-stream'),
+    browserSync = require('browser-sync');
 
 const convert = width => gulp.src("img-src/*.jpg")
     .pipe(resize({width: width}))
@@ -15,4 +16,14 @@ gulp.task('images', () => {
     for (let width = 300; width <= 800; width += 100)
         streams.push(convert(width));
     return merge.apply(null, streams);
+});
+
+gulp.task('serve', () => {
+    browserSync.init({
+        server: {
+            baseDir: "./"
+        }
+    });
+
+    gulp.watch("*.html").on("change", reload);
 });

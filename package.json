@@ -1,10 +1,14 @@
 {
   "name": "mws-restaurant-stage-1",
+  "private": true,
   "version": "1.0.0",
   "description": "--- #### _Three Stage Course Material Project - Restaurant Reviews_",
   "main": "",
-  "dependencies": {},
+  "dependencies": {
+    "idb": "^2.1.2"
+  },
   "devDependencies": {
+    "browser-sync": "^2.24.4",
     "gulp": "^3.9.1",
     "gulp-image-resize": "^0.13.0",
     "gulp-imagemin": "^4.1.0",
@@ -12,8 +16,9 @@
     "merge-stream": "^1.0.1"
   },
   "scripts": {
+    "clean": "rm img/*.jpg",
     "build": "gulp images",
-    "clean": "rm img/*.jpg"
+    "serve": "gulp serve"
   },
   "repository": {
     "type": "git",
