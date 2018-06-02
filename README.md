@@ -1,6 +1,4 @@
-# Mobile Web Specialist Certification Course
----
-#### _Three Stage Course Material Project - Restaurant Reviews_
+# _Three Stage Course Material Project - Restaurant Reviews_
 
 ## Production
 
@@ -19,14 +17,10 @@ install production dependencies:
 
 In case you need to re-optimize images run:
 
-    $ npm run clean && npm run build
+    npm run clean && npm run build
 
 ### Serving
 
 In case you need to run development server:
 
-    $ npm run serve
-
-
-
-
+    npm run serve
