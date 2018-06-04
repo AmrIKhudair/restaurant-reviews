@@ -1,5 +1,7 @@
 # _Three Stage Course Material Project - Restaurant Reviews_
 
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+
 ## Production
 
 install production dependencies:
