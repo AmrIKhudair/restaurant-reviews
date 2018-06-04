@@ -1,5 +1,3 @@
-import DBHelper from './DBHelper'
-
 let restaurant
 var map
 
@@ -17,7 +15,7 @@ window.initMap = () => {
         scrollwheel: false
       })
       fillBreadcrumb()
-      DBHelper.mapMarkerForRestaurant(restaurant, map)
+      window.DBHelper.mapMarkerForRestaurant(restaurant, map)
     }
   })
 }
@@ -35,7 +33,7 @@ const fetchRestaurantFromURL = (callback) => {
     const error = 'No restaurant id in URL'
     callback(error, null)
   } else {
-    DBHelper.fetchRestaurantById(id, (error, _restaurant) => {
+    window.DBHelper.fetchRestaurantById(id, (error, _restaurant) => {
       restaurant = _restaurant
       if (!restaurant) {
         console.error(error)
@@ -59,10 +57,10 @@ const fillRestaurantHTML = (_restaurant = restaurant) => {
 
   const image = document.getElementById('restaurant-img')
   image.className = 'restaurant-img'
-  image.src = DBHelper.imageUrlForRestaurant(_restaurant)
+  image.src = window.DBHelper.imageUrlForRestaurant(_restaurant)
 
   /* add srcset, sizes and alt */
-  image.srcset = DBHelper.imageSrcsetForRestaurant(_restaurant)
+  image.srcset = window.DBHelper.imageSrcsetForRestaurant(_restaurant)
   image.sizes = '(max-width: 41em) calc(100vw - 5em), calc(50vw - 5em)'
   image.alt = _restaurant.name
 

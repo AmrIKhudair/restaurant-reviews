@@ -1,10 +1,7 @@
-/* import idb */
-import idb from '../node_modules/idb/lib/idb'
-
 /**
  * Common database helper functions.
  */
-export default class DBHelper {
+window.DBHelper = class { //
   /**
    * Database URL.
    * Change this to restaurants.json file location on your server.
@@ -17,7 +14,7 @@ export default class DBHelper {
   async DB () {
     if (this._dbPromise) return this._dbPromise
 
-    return (this._dbPromise = idb.open('restaurants', 1, upgradeDB => {
+    return (this._dbPromise = window.idb.open('restaurants', 1, upgradeDB => {
       switch (upgradeDB) {
         case 0:
       }
@@ -30,13 +27,13 @@ export default class DBHelper {
 
   /* fix: update fetchRestaurants to use fetchRestaurantById */
   static fetchRestaurants (callback) {
-    return DBHelper.fetchRestaurantById('', callback)
+    return window.DBHelper.fetchRestaurantById('', callback)
   }
 
   /* fix: fetch a single restaurant from api */
   static fetchRestaurantById (id, callback) {
     let xhr = new window.XMLHttpRequest()
-    xhr.open('GET', DBHelper.DATABASE_URL + '/' + id)
+    xhr.open('GET', window.DBHelper.DATABASE_URL + '/' + id)
     xhr.onload = () => {
       if (xhr.status === 200) { // Got a success response from server!
         /* fix: restaurants variable */
@@ -55,7 +52,7 @@ export default class DBHelper {
    */
   static fetchRestaurantByCuisine (cuisine, callback) {
     // Fetch all restaurants  with proper error handling
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    window.DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null)
       } else {
@@ -71,7 +68,7 @@ export default class DBHelper {
    */
   static fetchRestaurantByNeighborhood (neighborhood, callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    window.DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null)
       } else {
@@ -87,7 +84,7 @@ export default class DBHelper {
    */
   static fetchRestaurantByCuisineAndNeighborhood (cuisine, neighborhood, callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    window.DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null)
       } else {
@@ -108,7 +105,7 @@ export default class DBHelper {
    */
   static fetchNeighborhoods (callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    window.DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null)
       } else {
@@ -126,7 +123,7 @@ export default class DBHelper {
    */
   static fetchCuisines (callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    window.DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null)
       } else {
@@ -159,7 +156,7 @@ export default class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant (restaurant) {
-    return DBHelper._widthFile(restaurant.photograph, 800)
+    return window.DBHelper._widthFile(restaurant.photograph, 800)
   }
 
   /**
@@ -169,7 +166,7 @@ export default class DBHelper {
   static imageSrcsetForRestaurant (restaurant) {
     const srcset = []
 
-    for (let width = 300; width <= 800; width += 100) { srcset.push(`${DBHelper._widthFile(restaurant.photograph, width)} ${width}w`) }
+    for (let width = 300; width <= 800; width += 100) { srcset.push(`${window.DBHelper._widthFile(restaurant.photograph, width)} ${width}w`) }
 
     return srcset.join(', ')
   }
@@ -181,7 +178,7 @@ export default class DBHelper {
     const marker = new window.google.maps.Marker({
       position: restaurant.latlng,
       title: restaurant.name,
-      url: DBHelper.urlForRestaurant(restaurant),
+      url: window.DBHelper.urlForRestaurant(restaurant),
       map: map,
       animation: window.google.maps.Animation.DROP}
     )

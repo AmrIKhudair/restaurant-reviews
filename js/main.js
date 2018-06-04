@@ -1,5 +1,3 @@
-import DBHelper from './dbhelper'
-
 let restaurants,
   neighborhoods,
   cuisines
@@ -18,7 +16,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
  * Fetch all neighborhoods and set their HTML.
  */
 const fetchNeighborhoods = () => {
-  DBHelper.fetchNeighborhoods((error, _neighborhoods) => {
+  window.DBHelper.fetchNeighborhoods((error, _neighborhoods) => {
     if (error) { // Got an error
       console.error(error)
     } else {
@@ -45,7 +43,7 @@ const fillNeighborhoodsHTML = (_neighborhoods = neighborhoods) => {
  * Fetch all cuisines and set their HTML.
  */
 const fetchCuisines = () => {
-  DBHelper.fetchCuisines((error, _cuisines) => {
+  window.DBHelper.fetchCuisines((error, _cuisines) => {
     if (error) { // Got an error!
       console.error(error)
     } else {
@@ -98,7 +96,7 @@ const updateRestaurants = () => {
   const cuisine = cSelect[cIndex].value
   const neighborhood = nSelect[nIndex].value
 
-  DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
+  window.DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
     if (error) { // Got an error!
       console.error(error)
     } else {
@@ -142,10 +140,10 @@ const createRestaurantHTML = (restaurant) => {
 
   const image = document.createElement('img')
   image.className = 'restaurant-img'
-  image.src = DBHelper.imageUrlForRestaurant(restaurant)
+  image.src = window.DBHelper.imageUrlForRestaurant(restaurant)
 
   /* img srcset, sizes and alt  */
-  image.srcset = DBHelper.imageSrcsetForRestaurant(restaurant)
+  image.srcset = window.DBHelper.imageSrcsetForRestaurant(restaurant)
   image.sizes = '(max-width: 57em) calc(100vw - 10em), (max-width: 84em) calc((100vw - 20em) / 2), calc((100vw - 30em) / 3)'
   /* fix: make alt more descriptive */
   image.alt = 'Photo of ' + restaurant.name
@@ -167,7 +165,7 @@ const createRestaurantHTML = (restaurant) => {
 
   const more = document.createElement('a')
   more.innerHTML = 'View Details'
-  more.href = DBHelper.urlForRestaurant(restaurant)
+  more.href = window.DBHelper.urlForRestaurant(restaurant)
   li.append(more)
 
   /* add aria-label to link */
@@ -182,7 +180,7 @@ const createRestaurantHTML = (restaurant) => {
 const addMarkersToMap = (_restaurants = restaurants) => {
   restaurants.forEach(restaurant => {
     // Add marker to the map
-    const marker = DBHelper.mapMarkerForRestaurant(restaurant, map)
+    const marker = window.DBHelper.mapMarkerForRestaurant(restaurant, map)
     window.google.maps.event.addListener(marker, 'click', () => {
       window.location.href = marker.url
     })

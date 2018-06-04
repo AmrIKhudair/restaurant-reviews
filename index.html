@@ -23,12 +23,12 @@
 
   <main id="maincontent">
     <!-- hide map from ARIA -->
-    <section aria-hidden="true" id="map-container">
+    <aside aria-hidden="true" id="map-container">
       <!-- skip map controls -->
       <a id="skipMap" href="#restaurants">Skip map controls</a>
       <!-- fix: add application role -->
       <div id="map" role="application"></div>
-    </section>
+    </aside>
     <!-- added label to section and selects -->
     <section id="restaurants" aria-label="Restaurants">
       <aside class="filter-options" aria-label="Filter Restaurants">
@@ -44,9 +44,10 @@
     </section>
   </main>
 
+  <script src="node_modules/idb/lib/idb.js"></script>
   <script src="js/dbhelper.js"></script>
   <script src="js/main.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrt4bFYrx1JU0r5vA-4SrBHHfWZQ-QA6Q&libraries=places&callback=initMap"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrt4bFYrx1JU0r5vA-4SrBHHfWZQ-QA6Q&libraries=places&callback=window.initMap"></script>
 
 
   <footer id="footer">

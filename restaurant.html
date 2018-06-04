@@ -38,20 +38,20 @@
   <main id="maincontent">
     <!-- Beginning map -->
     <!-- hide map from ARIA  -->
-    <section aria-hidden="true" id="map-container">
+    <aside aria-hidden="true" id="map-container">
       <!-- skip map controls -->
       <a id="skipMap" href="#restaurant-container">Skip map controls</a>
       <!-- fix: add application role -->
       <div id="map" role="application"></div>
-    </section>
+    </aside>
     <!-- End map -->
     <!-- ADDED: Labels to sections -->
     <!-- Beginning restaurant -->
     <!-- give tabindex for keyboard scrolling not to be overtaken by the map -->
     <section aria-labelledby="restaurant-name" tabindex="0" id="restaurant-container">
       <!-- fix: heading rank -->
-      <h2 id="restaurant-name"></h1>
-      <img src="" id="restaurant-img">
+      <h2 id="restaurant-name">Loading...</h2>
+      <img src="#" id="restaurant-img" alt="">
       <p id="restaurant-cuisine"></p>
       <p id="restaurant-address"></p>
       <!-- addded aria label -->
@@ -73,6 +73,7 @@
   <!-- End footer -->
 
   <!-- Beginning scripts -->
+  <script src="node_modules/idb/lib/idb.js"></script>
   <!-- Database helpers -->
   <script src="js/dbhelper.js"></script>
   <!-- Main javascript file -->
