@@ -35,12 +35,12 @@ const fetchRestaurantFromURL = (callback) => {
   } else {
     window.DBHelper.fetchRestaurantById(id, (error, _restaurant) => {
       restaurant = _restaurant
-      if (!restaurant) {
+      if (!_restaurant) {
         console.error(error)
         return
       }
       fillRestaurantHTML()
-      callback(null, restaurant)
+      callback(null, _restaurant)
     })
   }
 }

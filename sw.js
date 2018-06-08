@@ -3,20 +3,23 @@
 /* cache resources on install */
 self.addEventListener('install', e => {
   const resources = [
-    'manifest.json',
-    'index.html',
-    'restaurant.html',
-    'css/styles.css',
-    'data/restaurants.json',
-    'js/dbhelper.js',
-    'js/main.js',
-    'js/restaurant_info.js'
+    '/manifest.json',
+    '/',
+    '/restaurant.html',
+    '/css/styles.css',
+    '/data/restaurants.json',
+    '/js/dbhelper.js',
+    '/js/main.js',
+    '/js/restaurant_info.js'
   ]
 
-  e.waitUntil(caches.open('cache-v2').then(cache => cache.addAll(resources)))
-
-  /* delete old cache from stage one */
-  caches.delete('cache-v1')
+  e.waitUntil(
+    caches.open('cache-v2')
+      // cache static content
+      .then(cache => cache.addAll(resources))
+      // delete old cache
+      .then(() => caches.delete('cache-v1'))
+  )
 })
 
 /* Hijacking fetch requests */
@@ -26,7 +29,7 @@ self.addEventListener('fetch', e => e.respondWith(
       if (new URL(e.request.url).host !== 'localhost:1337') { caches.open('cache-v2').then(cache => cache.put(makeCachable(e.request), response)) }
       return response.clone()
     },
-    () => caches.match(makeCachable(e.request)).then(
+    () => caches.match(makeCachable(e.request), {ignoreSearch: true}).then(
       response => response || new NotFoundResponse()
     )
   )

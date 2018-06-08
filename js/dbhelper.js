@@ -1,24 +1,47 @@
 /**
  * Common database helper functions.
  */
-window.DBHelper = class { //
+window.DBHelper = class DBHelper {
   /**
    * Database URL.
    * Change this to restaurants.json file location on your server.
    */
   static get DATABASE_URL () {
     /* FEAT: made database url external */
-    return `//localhost:1337/restaurants`
+    return '//localhost:1337/restaurants/'
   }
 
-  async DB () {
-    if (this._dbPromise) return this._dbPromise
+  static fetch (id) {
+    if (DBHelper._fetchPromise instanceof Promise) return DBHelper._fetchPromise
 
-    return (this._dbPromise = window.idb.open('restaurants', 1, upgradeDB => {
-      switch (upgradeDB) {
-        case 0:
-      }
-    }))
+    if (!(DBHelper._dbPromise instanceof Promise)) {
+      DBHelper._dbPromise = window.idb.open('restaurants', 1, upgradeDB => {
+        switch (upgradeDB.oldVersion) {
+          case 0:
+            const restaurants = upgradeDB.createObjectStore('restaurants', {keyPath: 'id'})
+            restaurants.createIndex('cuisine', 'cuisine_type')
+            restaurants.createIndex('neighborhood', 'neighborhood')
+            restaurants.createIndex('cuisineAndNeighborhood', ['cuisine_type', 'neighborhood'])
+        }
+      })
+    }
+
+    return (
+      DBHelper._fetchPromise = window.fetch(DBHelper.DATABASE_URL + (id || ''))
+        .then(response => response.json())
+        .then(
+          data => DBHelper._dbPromise.then(db => {
+            const tx = db.transaction('restaurants', 'readwrite')
+            const restaurants = tx.objectStore('restaurants')
+
+            if (data instanceof Array) data.forEach(item => restaurants.put(item))
+            else restaurants.put(data)
+
+            return tx.complete
+          }),
+          () => {}
+        ).then(() => DBHelper._dbPromise)
+    )
   }
 
   /**
@@ -27,113 +50,98 @@ window.DBHelper = class { //
 
   /* fix: update fetchRestaurants to use fetchRestaurantById */
   static fetchRestaurants (callback) {
-    return window.DBHelper.fetchRestaurantById('', callback)
+    return DBHelper.fetchRestaurantById(null, callback)
   }
 
   /* fix: fetch a single restaurant from api */
   static fetchRestaurantById (id, callback) {
-    let xhr = new window.XMLHttpRequest()
-    xhr.open('GET', window.DBHelper.DATABASE_URL + '/' + id)
-    xhr.onload = () => {
-      if (xhr.status === 200) { // Got a success response from server!
-        /* fix: restaurants variable */
-        const restaurants = JSON.parse(xhr.responseText)
-        callback(null, restaurants)
-      } else { // Oops!. Got an error from server.
-        const error = (`Request failed. Returned status of ${xhr.status}`)
-        callback(error, null)
-      }
-    }
-    xhr.send()
+    return DBHelper.fetch(id)
+      .then(db => {
+        const tx = db.transaction('restaurants')
+        const restaurants = tx.objectStore('restaurants')
+        const data = id ? restaurants.get(+id) : restaurants.getAll()
+        return tx.complete.then(() => data)
+      }).then(data => callback(null, data))
+      .catch(error => callback(error, null))
   }
 
   /**
    * Fetch restaurants by a cuisine type with proper error handling.
    */
-  static fetchRestaurantByCuisine (cuisine, callback) {
-    // Fetch all restaurants  with proper error handling
-    window.DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
-        callback(error, null)
-      } else {
-        // Filter restaurants to have only given cuisine type
-        const results = restaurants.filter(r => r.cuisine_type === cuisine)
-        callback(null, results)
-      }
-    })
+  static fetchRestaurantsByCuisine (cuisine, callback) {
+    if (cuisine === 'all') return DBHelper.fetchRestaurants(callback)
+    return DBHelper.fetch().then(db => {
+      const tx = db.transaction('restaurants')
+      const restaurants = tx.objectStore('restaurants')
+      const data = restaurants.index('cuisine').getAll(cuisine)
+
+      return tx.complete.then(() => data)
+    }).then(data => callback(null, data)).catch(error => callback(error, null))
   }
 
   /**
    * Fetch restaurants by a neighborhood with proper error handling.
    */
-  static fetchRestaurantByNeighborhood (neighborhood, callback) {
-    // Fetch all restaurants
-    window.DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
-        callback(error, null)
-      } else {
-        // Filter restaurants to have only given neighborhood
-        const results = restaurants.filter(r => r.neighborhood === neighborhood)
-        callback(null, results)
-      }
-    })
+  static fetchRestaurantsByNeighborhood (neighborhood, callback) {
+    if (neighborhood === 'all') return DBHelper.fetchRestaurants(callback)
+    return DBHelper.fetch().then(db => {
+      const tx = db.transaction('restaurants')
+      const restaurants = tx.objectStore('restaurants')
+      const data = restaurants.index('neighborhood').getAll(neighborhood)
+
+      return tx.complete.then(() => data)
+    }).then(data => callback(null, data)).catch(error => callback(error, null))
   }
 
   /**
    * Fetch restaurants by a cuisine and a neighborhood with proper error handling.
    */
   static fetchRestaurantByCuisineAndNeighborhood (cuisine, neighborhood, callback) {
-    // Fetch all restaurants
-    window.DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
-        callback(error, null)
-      } else {
-        let results = restaurants
-        if (cuisine !== 'all') { // filter by cuisine
-          results = results.filter(r => r.cuisine_type === cuisine)
-        }
-        if (neighborhood !== 'all') { // filter by neighborhood
-          results = results.filter(r => r.neighborhood === neighborhood)
-        }
-        callback(null, results)
-      }
-    })
+    if (cuisine === 'all') return DBHelper.fetchRestaurantsByNeighborhood(neighborhood, callback)
+    if (neighborhood === 'all') return DBHelper.fetchRestaurantsByCuisine(cuisine, callback)
+    return DBHelper.fetch().then(db => {
+      const tx = db.transaction('restaurants')
+      const restaurants = tx.objectStore('restaurants')
+      const data = restaurants.index('cuisineAndNeighborhood').getAll([cuisine, neighborhood])
+
+      return tx.complete.then(() => data)
+    }).then(data => callback(null, data)).catch(error => callback(error, null))
   }
 
   /**
    * Fetch all neighborhoods with proper error handling.
    */
   static fetchNeighborhoods (callback) {
-    // Fetch all restaurants
-    window.DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
-        callback(error, null)
-      } else {
-        // Get all neighborhoods from all restaurants
-        const neighborhoods = restaurants.map((v, i) => restaurants[i].neighborhood)
-        // Remove duplicates from neighborhoods
-        const uniqueNeighborhoods = neighborhoods.filter((v, i) => neighborhoods.indexOf(v) === i)
-        callback(null, uniqueNeighborhoods)
-      }
-    })
+    return DBHelper.fetch().then(db => {
+      const tx = db.transaction('restaurants')
+      const restaurnats = tx.objectStore('restaurants')
+      const cursorPromise = restaurnats.index('neighborhood').openKeyCursor(null, 'nextunique')
+      let neighborhoods = []
+
+      return cursorPromise.then(function cursorIterate (cursor) {
+        if (!cursor) return neighborhoods
+        neighborhoods.push(cursor.key)
+        return cursor.continue().then(cursorIterate)
+      })
+    }).then(neighbours => callback(null, neighbours)).catch(error => callback(error, null))
   }
 
   /**
    * Fetch all cuisines with proper error handling.
    */
   static fetchCuisines (callback) {
-    // Fetch all restaurants
-    window.DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
-        callback(error, null)
-      } else {
-        // Get all cuisines from all restaurants
-        const cuisines = restaurants.map((v, i) => restaurants[i].cuisine_type)
-        // Remove duplicates from cuisines
-        const uniqueCuisines = cuisines.filter((v, i) => cuisines.indexOf(v) === i)
-        callback(null, uniqueCuisines)
-      }
-    })
+    return DBHelper.fetch().then(db => {
+      const tx = db.transaction('restaurants')
+      const restaurnats = tx.objectStore('restaurants')
+      const cursorPromise = restaurnats.index('cuisine').openKeyCursor(null, 'nextunique')
+      let cuisines = []
+
+      return cursorPromise.then(function cursorIterate (cursor) {
+        if (!cursor) return cuisines
+        cuisines.push(cursor.key)
+        return cursor.continue().then(cursorIterate)
+      })
+    }).then(cuisines => callback(null, cuisines)).catch(error => callback(error, null))
   }
 
   /**
@@ -156,7 +164,7 @@ window.DBHelper = class { //
    * Restaurant image URL.
    */
   static imageUrlForRestaurant (restaurant) {
-    return window.DBHelper._widthFile(restaurant.photograph, 800)
+    return DBHelper._widthFile(restaurant.photograph, 800)
   }
 
   /**
@@ -166,7 +174,7 @@ window.DBHelper = class { //
   static imageSrcsetForRestaurant (restaurant) {
     const srcset = []
 
-    for (let width = 300; width <= 800; width += 100) { srcset.push(`${window.DBHelper._widthFile(restaurant.photograph, width)} ${width}w`) }
+    for (let width = 300; width <= 800; width += 100) { srcset.push(`${DBHelper._widthFile(restaurant.photograph, width)} ${width}w`) }
 
     return srcset.join(', ')
   }
@@ -178,12 +186,10 @@ window.DBHelper = class { //
     const marker = new window.google.maps.Marker({
       position: restaurant.latlng,
       title: restaurant.name,
-      url: window.DBHelper.urlForRestaurant(restaurant),
+      url: DBHelper.urlForRestaurant(restaurant),
       map: map,
       animation: window.google.maps.Animation.DROP}
     )
     return marker
   }
 }
-
-/* init indexeddb */
