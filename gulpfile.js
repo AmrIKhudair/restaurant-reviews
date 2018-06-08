@@ -1,13 +1,14 @@
 const gulp = require('gulp')
 const resize = require('gulp-image-resize')
 const imagemin = require('gulp-imagemin')
+const pngquant = require('imagemin-pngquant')
 const rename = require('gulp-rename')
 const merge = require('merge-stream')
 const browserSync = require('browser-sync')
 
 const convert = width => gulp.src('img-src/*.jpg')
   .pipe(resize({width: width}))
-  .pipe(imagemin({progressive: true}))
+  .pipe(imagemin([{progressive: true}]))
   .pipe(rename(path => (path.basename += '-' + width + 'w')))
   .pipe(gulp.dest('img'))
 

@@ -52,8 +52,8 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   min-height: 100%;
 }
 #footer {
-  background-color: #444;
-  color: #aaa;
+  background-color: #333;
+  color: #ccc;
   font-size: 8pt;
   letter-spacing: 1px;
   text-align: center;
@@ -146,7 +146,7 @@ nav:first-child h1 a {
 .filter-options {
 
   width: 100%;
-  background-color: #3397DB;
+  background-color: #144c72;
   align-items: center;
 
   /* display flex */
@@ -271,7 +271,7 @@ nav:first-child h1 a {
   font-size: 11pt;
 }
 #restaurants-list li a {
-  background-color: orange;
+  background-color: #724a00;
   border-bottom: 3px solid #eee;
   color: #fff;
   display: inline-block;

@@ -13,12 +13,10 @@ self.addEventListener('install', e => {
     '/js/restaurant_info.js'
   ]
 
+  caches.delete('cache-v1')
+
   e.waitUntil(
-    caches.open('cache-v2')
-      // cache static content
-      .then(cache => cache.addAll(resources))
-      // delete old cache
-      .then(() => caches.delete('cache-v1'))
+    caches.open('cache-v2').then(cache => cache.addAll(resources))
   )
 })
 
@@ -37,23 +35,17 @@ self.addEventListener('fetch', e => e.respondWith(
 
 /* generates a cachable request for the images that ignores sizes */
 function makeCachable (request) {
-  request = request.clone()
-
   const url = new URL(request.url)
 
-  if (url.host === self.location.host) {
-    const [directory, file] = sliceAtLast(url.pathname, '/', true)
-    const [fileName, fileExt] = sliceAtLast(file, '.')
-    const imgName = sliceAtLast(fileName, '-')[0]
-    const imgExts = ['jpg']
+  if (url.host !== self.location.host) return request
 
-    if (directory === 'img' && fileExt in imgExts) {
-      url.pathname = `${directory}/${imgName}`
-      request.url = url.href
-    }
-  }
+  const [directory, file] = sliceAtLast(url.pathname, '/', true)
+  const [fileName, fileExt] = sliceAtLast(file, '.')
+  const imgName = sliceAtLast(fileName, '-')[0]
 
-  return request
+  if (directory === '/img' && fileExt === 'jpg') url.pathname = `${directory}/${imgName}`
+
+  return new self.Request(url.href)
 }
 
 /* slice a string at the last occurance of a separator */
