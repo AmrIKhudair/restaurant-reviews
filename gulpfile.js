@@ -1,7 +1,6 @@
 const gulp = require('gulp')
 const resize = require('gulp-image-resize')
 const imagemin = require('gulp-imagemin')
-const pngquant = require('imagemin-pngquant')
 const rename = require('gulp-rename')
 const merge = require('merge-stream')
 const browserSync = require('browser-sync')

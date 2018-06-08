@@ -125,7 +125,7 @@ nav:first-child h1 a {
 
 /* Add a color to all links inside the list */
 #breadcrumb li a {
-    color: #0275d8;
+    color: #0157a2;
     text-decoration: none;
 }
 
@@ -315,7 +315,7 @@ nav:first-child h1 a {
   position: fixed;
 }
 #restaurant-name {
-  color: #f18200;
+  color: #784100;
   font-family: Arial,sans-serif;
   font-size: 20pt;
   font-weight: 200;
