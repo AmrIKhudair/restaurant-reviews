@@ -152,7 +152,7 @@ const createRestaurantHTML = (restaurant) => {
     }
   }
 
-  if (restaurant.id < 4) setSrc()
+  if (restaurant.id === 3) setSrc()
   window.addEventListener('resize', setSrc)
   window.addEventListener('scroll', setSrc)
 
