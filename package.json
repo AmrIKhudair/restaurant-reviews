@@ -13,6 +13,7 @@
     "gulp-image-resize": "^0.13.0",
     "gulp-imagemin": "^4.1.0",
     "gulp-rename": "^1.2.2",
+    "imagemin-mozjpeg": "^7.0.0",
     "merge-stream": "^1.0.1"
   },
   "scripts": {

@@ -140,11 +140,22 @@ const createRestaurantHTML = (restaurant) => {
 
   const image = document.createElement('img')
   image.className = 'restaurant-img'
-  image.src = window.DBHelper.imageUrlForRestaurant(restaurant)
 
-  /* img srcset, sizes and alt  */
-  image.srcset = window.DBHelper.imageSrcsetForRestaurant(restaurant)
+  /* img sizes */
   image.sizes = '(max-width: 57em) calc(100vw - 10em), (max-width: 84em) calc((100vw - 20em) / 2), calc((100vw - 30em) / 3)'
+
+  /* make image only start to load when onscreen */
+  const setSrc = () => {
+    if (image.getBoundingClientRect().top <= window.innerHeight) {
+      image.src = window.DBHelper.imageUrlForRestaurant(restaurant)
+      image.srcset = window.DBHelper.imageSrcsetForRestaurant(restaurant)
+    }
+  }
+
+  if (restaurant.id < 4) setSrc()
+  window.addEventListener('resize', setSrc)
+  window.addEventListener('scroll', setSrc)
+
   /* fix: make alt more descriptive */
   image.alt = 'Photo of ' + restaurant.name
 
