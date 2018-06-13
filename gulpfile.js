@@ -1,9 +1,9 @@
 const gulp = require('gulp')
 const resize = require('gulp-image-resize')
 const imagemin = require('gulp-imagemin')
-// const mozjpeg = require('imagemin-mozjpeg')
 const rename = require('gulp-rename')
 const merge = require('merge-stream')
+const compression = require('compression')
 const browserSync = require('browser-sync')
 
 const convert = width => gulp.src('img-src/*.jpg')
@@ -23,7 +23,8 @@ gulp.task('images', () => {
 gulp.task('serve', () => {
   browserSync.init({
     server: {
-      baseDir: './'
+      baseDir: './',
+      middleware: (request, response, next) => compression()(request, response, next)
     }
   })
 
