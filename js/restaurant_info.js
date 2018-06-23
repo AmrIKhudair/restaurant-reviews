@@ -108,11 +108,11 @@ const createReviewHTML = review => {
   li.appendChild(name)
 
   const date = document.createElement('p')
-  date.innerHTML = `Created ${sanitize(review.createdAt)}. Last updated ${sanitize(review.updatedAt)}`
+  date.innerHTML = `Created ${sanitize(review.createdAt)}. Last updated ${sanitize(review.updatedAt)}.`
   li.appendChild(date)
 
   const rating = document.createElement('p')
-  rating.innerHTML = `Rating: ${review.rating}`
+  rating.innerHTML = `Rating: ${stars(review.rating)}`
   li.appendChild(rating)
 
   const comments = document.createElement('p')
@@ -138,6 +138,12 @@ function sanitize (timestamp) {
 
 function ago (value, name) {
   return `${value} ${name + (value === 1 ? '' : 's')} ago`
+}
+
+function stars (value, max = 5) {
+  const arr = []
+  for (let i = 0; i < max; i++) arr.push(i < value ? '★' : '☆')
+  return arr.join('')
 }
 
 /**

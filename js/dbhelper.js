@@ -23,7 +23,8 @@ window.DBHelper = {
           case 1:
             const reviews = upgradeDB.createObjectStore('reviews', {keyPath: 'id'})
             reviews.createIndex('restaurant', 'restaurant_id')
-            upgradeDB.createObjectStore('pending_reviews')
+            const pending = upgradeDB.createObjectStore('pending_reviews', {autoIncrement: true})
+            pending.createIndex('restaurant', 'restaurant_id')
         }
       })
     } return this._dbPromise
@@ -38,6 +39,7 @@ window.DBHelper = {
             const tx = db.transaction('restaurants', 'readwrite')
             const restaurants = tx.objectStore('restaurants')
 
+            restaurants.clear()
             if (data instanceof Array) data.forEach(item => restaurants.put(item))
             else restaurants.put(data)
 
@@ -205,7 +207,10 @@ window.DBHelper = {
           data => this.DB_PROMISE.then(db => {
             const tx = db.transaction('reviews', 'readwrite')
             const reviews = tx.objectStore('reviews')
+
+            reviews.clear()
             data.forEach(review => reviews.put(review))
+
             return tx.complete
           }),
           () => {}
@@ -223,9 +228,9 @@ window.DBHelper = {
       })
   },
 
-  submitReview (review) {
+  submitReview (reviewStub, retrying = false) {
     const submitPromise = new Promise((resolve, reject) => {
-      try { resolve(JSON.stringify(review)) } catch (error) { reject(error) }
+      try { resolve(JSON.stringify(reviewStub)) } catch (error) { reject(error) }
     })
       .then(review => window.fetch(this.DATABASE_URL + 'reviews/', {
         body: review,
@@ -240,7 +245,75 @@ window.DBHelper = {
       return tx.complete
     }))
 
+    if (!retrying) {
+      submitPromise.catch(() => this.DB_PROMISE.then(db => {
+        const tx = db.transaction('pending_reviews', 'readwrite')
+        const pending = tx.objectStore('pending_reviews')
+        pending.put(reviewStub)
+        return tx.complete.then(() => this.checkPending(reviewStub['restaurant_id']))
+      }))
+    }
+
     return submitPromise
-  }
+  },
+
+  checkPending (id) {
+    if (this.onretrywait instanceof Function) this.onretrywait()
+    return wait(5000).then(() => this.getPending(+id).then(reviews => {
+      let iteration
+
+      const iterate = () => new Promise((resolve, reject) => {
+        iteration = reviews.next()
+        if (iteration.done) {
+          if (this.ondone instanceof Function) this.ondone()
+          return
+        }
+        console.log(iteration)
+        const [key, review] = iteration.value
+        const submitPromise = this.submitReview(review, true)
+        submitPromise.catch(() => resolve(this.checkPending(+id)))
+        submitPromise
+          .then(() => this.clearPending(key))
+          .then(() => resolve(iterate()))
+          .catch(reject)
+      })
+
+      if (this.onretrying instanceof Function) this.onretrying()
+      return iterate()
+    }))
+  },
+
+  getPending (id) {
+    return this.DB_PROMISE.then(db => {
+      const tx = db.transaction('pending_reviews')
+      const pending = tx.objectStore('pending_reviews')
+      const map = new Map()
+
+      pending.index('restaurant').openCursor(+id).then(function cursorIterator (cursor) {
+        if (!cursor) return
+        map.set(cursor.key, cursor.value)
+        return cursor.continue().then(cursorIterator)
+      })
+
+      return tx.complete.then(() => map.entries())
+    })
+  },
+
+  clearPending (key) {
+    return this.DB_PROMISE.then(db => {
+      const tx = db.transaction('pending_reviews', 'readwrite')
+      const pending = tx.objectStore('pending_reviews')
+      pending.delete(key)
+      return tx.complete
+    })
+  },
+
+  /* user provided: onretrywait, onretrying, ondone */
+  onretrywait () { console.log('onretrywait') },
+  onretrying () { console.log('onretrying') },
+  ondone () { console.log('ondone') }
+
   /* end  : reviews */
 }
+
+const wait = time => new Promise(resolve => setTimeout(resolve, time))
