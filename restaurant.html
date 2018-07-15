@@ -24,12 +24,16 @@
   <header>
     <!-- Beginning nav -->
     <nav>
-      <h1><a href="/">Restaurant Reviews</a></h1>
+      <h1>
+        <a href="/">Restaurant Reviews</a>
+      </h1>
     </nav>
     <!-- Beginning breadcrumb ADDED: nav wrapping as recommended by WAI-ARIA -->
     <nav aria-label="Breadcrumb" id="breadcrumb">
       <ul>
-        <li><a href="/">Home</a></li>
+        <li>
+          <a href="/">Home</a>
+        </li>
       </ul>
     </nav>
     <!-- End breadcrumb -->
@@ -63,7 +67,37 @@
     <!-- end restaurant -->
     <!-- Beginning reviews -->
     <section aria-label="Reviews" id="reviews-container">
+      <h3>Reviews</h3>
       <ul id="reviews-list"></ul>
+      <form id="form">
+        <table class="full-width">
+          <tr>
+            <td>
+              <label for="name">Name:</label>
+            </td>
+            <td>
+              <input type="text" name="name" id="name" class="full-width form-control" placeholder="Your name here">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label for="rating">Rating:</label>
+            </td>
+            <td>
+              <input type="number" name="rating" value=1 min=1 max=5 id="rating" class="full-width form-control">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label for="comments">Comments:</label>
+            </td>
+            <td>
+              <textarea name="comments" id="comments" class="full-width form-control" placeholder="Your commnets here"></textarea>
+            </td>
+          </tr>
+        </table>
+        <input type="submit" value="Submit" class="full-width form-control" disabled>
+      </form>
     </section>
     <!-- End reviews -->
   </main>
@@ -71,7 +105,10 @@
 
   <!-- Beginning footer -->
   <footer id="footer">
-    Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
+    Copyright (c) 2017
+    <a href="/">
+      <strong>Restaurant Reviews</strong>
+    </a> All Rights Reserved.
   </footer>
   <!-- End footer -->
 

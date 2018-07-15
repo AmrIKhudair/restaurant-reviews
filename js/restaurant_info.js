@@ -42,6 +42,11 @@ const fetchRestaurantFromURL = (callback) => {
       fillRestaurantHTML()
       callback(null, _restaurant)
     })
+
+    window.DBHelper.fetchReviewsByRestaurantId(id, (error, reviews) => {
+      if (error) return console.error(error)
+      fillReviewsHTML(reviews)
+    })
   }
 }
 
@@ -71,8 +76,9 @@ const fillRestaurantHTML = (_restaurant = restaurant) => {
   if (_restaurant.operating_hours) {
     fillRestaurantHoursHTML()
   }
-  // fill reviews
-  fillReviewsHTML()
+
+  // enable submit button
+  document.getElementById('submit').removeAttribute('disabled')
 }
 
 /**
@@ -100,10 +106,6 @@ const fillRestaurantHoursHTML = (operatingHours = restaurant.operating_hours) =>
  */
 const fillReviewsHTML = (reviews = restaurant.reviews) => {
   const container = document.getElementById('reviews-container')
-  /* fix: header rank */
-  const title = document.createElement('h3')
-  title.innerHTML = 'Reviews'
-  container.appendChild(title)
 
   if (!reviews) {
     const noReviews = document.createElement('p')
@@ -112,10 +114,10 @@ const fillReviewsHTML = (reviews = restaurant.reviews) => {
     return
   }
   const ul = document.getElementById('reviews-list')
+  console.log(reviews)
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review))
   })
-  container.appendChild(ul)
 }
 
 /**
@@ -156,14 +158,43 @@ const fillBreadcrumb = (_restaurant = restaurant) => {
  * Get a parameter by name from page URL.
  */
 const getParameterByName = (name, url) => {
-  if (!url) { url = window.location.href }
+  if (!url) {
+    url = window.location.href
+  }
   name = name.replace(/[[\]]/g, '\\$&')
   const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`)
   const results = regex.exec(url)
-  if (!results) { return null }
-  if (!results[2]) { return '' }
+  if (!results) {
+    return null
+  }
+  if (!results[2]) {
+    return ''
+  }
   return decodeURIComponent(results[2].replace(/\+/g, ' '))
 }
+
+/* handling reviews */
+function handleSubmit (e) {
+  e.preventDefault()
+  const form = e.target
+  const elements = form.elements
+  for (const element of elements) element.setAttribute('disabled', true)
+  const review = {
+    restaurant_id: +restaurant.id,
+    name: elements['name'].value,
+    rating: +elements['rating'].value,
+    comments: elements['comments'].value
+  }
+  window.DBHelper.submitReview(review, (error, review) => {
+    for (const element of elements) element.removeAttribute('disabled')
+    if (error) return console.error(error)
+    form.reset()
+    form.dtsabled = false
+    document.getElementById('reviews-list').appendChild(createReviewHTML(review))
+  })
+}
+
+document.getElementById('form').addEventListener('submit', handleSubmit)
 
 /* register the service worker */
 if ('serviceWorker' in navigator) {

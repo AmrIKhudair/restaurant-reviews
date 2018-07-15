@@ -1,0 +1,6 @@
+
+Todo:
+  Posting reviews:
+    ☐ @high Display posted review without reloading
+    ☐ @high Store posted review in db
+    ☐ @high clear form on successful positing

@@ -424,3 +424,13 @@ nav:first-child h1 a {
 #skipMap:focus {
   z-index: 999999;
 }
+
+/* styling inputs */
+.full-width {
+  width: 100%;
+}
+
+.form-control {
+  resize: vertical;
+  padding: 1em;
+}
