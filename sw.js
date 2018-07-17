@@ -16,9 +16,11 @@ self.addEventListener('install', e => {
   caches.delete('cache-v1')
 
   e.waitUntil(
-    caches.open('cache-v2').then(cache => cache.addAll(resources))
+    caches.open('cache-v2').then(cache => cache.addAll(resources)).then(() => self.skipWaiting())
   )
 })
+
+self.addEventListener('activate', e => e.waitUntil(self.clients.claim()))
 
 /* Hijacking fetch requests */
 self.addEventListener('fetch', e => e.respondWith(
