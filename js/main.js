@@ -7,23 +7,17 @@ var markers = []
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
-document.addEventListener('DOMContentLoaded', (event) => {
-  fetchNeighborhoods()
+document.addEventListener('DOMContentLoaded', () => Promise.all([
+  fetchNeighborhoods(),
   fetchCuisines()
-})
+]).catch(console.error))
 
 /**
  * Fetch all neighborhoods and set their HTML.
  */
-const fetchNeighborhoods = () => {
-  window.DBHelper.fetchNeighborhoods((error, _neighborhoods) => {
-    if (error) { // Got an error
-      console.error(error)
-    } else {
-      neighborhoods = _neighborhoods
-      fillNeighborhoodsHTML()
-    }
-  })
+const fetchNeighborhoods = async () => {
+  neighborhoods = await window.DBHelper.fetchNeighborhoods()
+  fillNeighborhoodsHTML()
 }
 
 /**
@@ -42,15 +36,9 @@ const fillNeighborhoodsHTML = (_neighborhoods = neighborhoods) => {
 /**
  * Fetch all cuisines and set their HTML.
  */
-const fetchCuisines = () => {
-  window.DBHelper.fetchCuisines((error, _cuisines) => {
-    if (error) { // Got an error!
-      console.error(error)
-    } else {
-      cuisines = _cuisines
-      fillCuisinesHTML()
-    }
-  })
+const fetchCuisines = async () => {
+  cuisines = await window.DBHelper.fetchCuisines()
+  fillCuisinesHTML()
 }
 
 /**
@@ -96,20 +84,18 @@ const updateRestaurants = () => {
   const cuisine = cSelect[cIndex].value
   const neighborhood = nSelect[nIndex].value
 
-  window.DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
-    if (error) { // Got an error!
-      console.error(error)
-    } else {
+  window.DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood).then(
+    restaurants => {
       resetRestaurants(restaurants)
       fillRestaurantsHTML()
     }
-  })
+  ).catch(console.error)
 }
 
 /**
  * Clear current restaurants, their HTML and remove their map markers.
  */
-const resetRestaurants = (_restaurants) => {
+const resetRestaurants = _restaurants => {
   // Remove all restaurants
   restaurants = []
   const ul = document.getElementById('restaurants-list')
@@ -135,7 +121,7 @@ const fillRestaurantsHTML = (_restaurants = restaurants) => {
 /**
  * Create restaurant HTML.
  */
-const createRestaurantHTML = (restaurant) => {
+const createRestaurantHTML = restaurant => {
   const li = document.createElement('li')
 
   const image = document.createElement('img')

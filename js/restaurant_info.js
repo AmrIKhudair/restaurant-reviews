@@ -5,49 +5,28 @@ var map
  * Initialize Google map, called from HTML.
  */
 window.initMap = () => {
-  fetchRestaurantFromURL((error, restaurant) => {
-    if (error) { // Got an error!
-      console.error(error)
-    } else {
-      map = new window.google.maps.Map(document.getElementById('map'), {
-        zoom: 16,
-        center: restaurant.latlng,
-        scrollwheel: false
-      })
-      fillBreadcrumb()
-      window.DBHelper.mapMarkerForRestaurant(restaurant, map)
-    }
-  })
+  fetchRestaurantFromURL().then(restaurant => {
+    map = new window.google.maps.Map(document.getElementById('map'), {
+      zoom: 16,
+      center: restaurant.latlng,
+      scrollwheel: false
+    })
+    fillBreadcrumb()
+    window.DBHelper.mapMarkerForRestaurant(restaurant, map)
+  }).catch(console.error)
 }
 
 /**
  * Get current restaurant from page URL.
  */
-const fetchRestaurantFromURL = (callback) => {
-  if (restaurant) { // restaurant already fetched!
-    callback(null, restaurant)
-    return
-  }
+const fetchRestaurantFromURL = async (callback) => {
+  if (restaurant) return restaurant
   const id = getParameterByName('id')
-  if (!id) { // no id found in URL
-    const error = 'No restaurant id in URL'
-    callback(error, null)
-  } else {
-    window.DBHelper.fetchRestaurantById(id, (error, _restaurant) => {
-      restaurant = _restaurant
-      if (!_restaurant) {
-        console.error(error)
-        return
-      }
-      fillRestaurantHTML()
-      callback(null, _restaurant)
-    })
-
-    window.DBHelper.fetchReviewsByRestaurantId(id, (error, reviews) => {
-      if (error) return console.error(error)
-      fillReviewsHTML(reviews)
-    })
-  }
+  if (!id) throw Error('No restaurant id in URL')
+  restaurant = await window.DBHelper.fetchRestaurantById(id)
+  fillRestaurantHTML()
+  window.DBHelper.fetchReviewsByRestaurantId(id).then(fillReviewsHTML).catch(console.error)
+  return restaurant
 }
 
 /**
@@ -114,7 +93,6 @@ const fillReviewsHTML = (reviews = restaurant.reviews) => {
     return
   }
   const ul = document.getElementById('reviews-list')
-  console.log(reviews)
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review))
   })
@@ -123,7 +101,7 @@ const fillReviewsHTML = (reviews = restaurant.reviews) => {
 /**
  * Create review HTML and add it to the webpage.
  */
-const createReviewHTML = (review) => {
+const createReviewHTML = review => {
   const li = document.createElement('li')
   const name = document.createElement('p')
   name.innerHTML = review.name
@@ -185,12 +163,11 @@ function handleSubmit (e) {
     rating: +elements['rating'].value,
     comments: elements['comments'].value
   }
-  window.DBHelper.submitReview(review, (error, review) => {
-    for (const element of elements) element.removeAttribute('disabled')
-    if (error) return console.error(error)
+  window.DBHelper.submitReview(review).then(review => {
     form.reset()
-    form.dtsabled = false
     document.getElementById('reviews-list').appendChild(createReviewHTML(review))
+  }).catch(console.error).finally(() => {
+    for (const element of elements) element.removeAttribute('disabled')
   })
 }
 

@@ -52,69 +52,68 @@ window.DBHelper = {
    */
 
   /* fix: update fetchRestaurants to use fetchRestaurantById */
-  fetchRestaurants (callback) {
-    return this.fetchRestaurantById(null, callback)
+  fetchRestaurants () {
+    return this.fetchRestaurantById(null)
   },
 
   /* fix: fetch a single restaurant from api */
-  fetchRestaurantById (id, callback) {
+  fetchRestaurantById (id) {
     return this.fetch(id)
       .then(db => {
         const tx = db.transaction('restaurants')
         const restaurants = tx.objectStore('restaurants')
         const data = id ? restaurants.get(+id) : restaurants.getAll()
         return tx.complete.then(() => data)
-      }).then(data => callback(null, data))
-      .catch(error => callback(error, null))
+      })
   },
 
   /**
    * Fetch restaurants by a cuisine type with proper error handling.
    */
-  fetchRestaurantsByCuisine (cuisine, callback) {
-    if (cuisine === 'all') return this.fetchRestaurants(callback)
+  fetchRestaurantsByCuisine (cuisine) {
+    if (cuisine === 'all') return this.fetchRestaurants()
     return this.fetch().then(db => {
       const tx = db.transaction('restaurants')
       const restaurants = tx.objectStore('restaurants')
       const data = restaurants.index('cuisine').getAll(cuisine)
 
       return tx.complete.then(() => data)
-    }).then(data => callback(null, data)).catch(error => callback(error, null))
+    })
   },
 
   /**
    * Fetch restaurants by a neighborhood with proper error handling.
    */
-  fetchRestaurantsByNeighborhood (neighborhood, callback) {
-    if (neighborhood === 'all') return this.fetchRestaurants(callback)
+  fetchRestaurantsByNeighborhood (neighborhood) {
+    if (neighborhood === 'all') return this.fetchRestaurants()
     return this.fetch().then(db => {
       const tx = db.transaction('restaurants')
       const restaurants = tx.objectStore('restaurants')
       const data = restaurants.index('neighborhood').getAll(neighborhood)
 
       return tx.complete.then(() => data)
-    }).then(data => callback(null, data)).catch(error => callback(error, null))
+    })
   },
 
   /**
    * Fetch restaurants by a cuisine and a neighborhood with proper error handling.
    */
-  fetchRestaurantByCuisineAndNeighborhood (cuisine, neighborhood, callback) {
-    if (cuisine === 'all') return this.fetchRestaurantsByNeighborhood(neighborhood, callback)
-    if (neighborhood === 'all') return this.fetchRestaurantsByCuisine(cuisine, callback)
+  fetchRestaurantByCuisineAndNeighborhood (cuisine, neighborhood) {
+    if (cuisine === 'all') return this.fetchRestaurantsByNeighborhood(neighborhood)
+    if (neighborhood === 'all') return this.fetchRestaurantsByCuisine(cuisine)
     return this.fetch().then(db => {
       const tx = db.transaction('restaurants')
       const restaurants = tx.objectStore('restaurants')
       const data = restaurants.index('cuisineAndNeighborhood').getAll([cuisine, neighborhood])
 
       return tx.complete.then(() => data)
-    }).then(data => callback(null, data)).catch(error => callback(error, null))
+    })
   },
 
   /**
    * Fetch all neighborhoods with proper error handling.
    */
-  fetchNeighborhoods (callback) {
+  fetchNeighborhoods () {
     return this.fetch().then(db => {
       const tx = db.transaction('restaurants')
       const restaurnats = tx.objectStore('restaurants')
@@ -126,13 +125,13 @@ window.DBHelper = {
         neighborhoods.push(cursor.key)
         return cursor.continue().then(cursorIterate)
       })
-    }).then(neighbours => callback(null, neighbours)).catch(error => callback(error, null))
+    })
   },
 
   /**
    * Fetch all cuisines with proper error handling.
    */
-  fetchCuisines (callback) {
+  fetchCuisines () {
     return this.fetch().then(db => {
       const tx = db.transaction('restaurants')
       const restaurnats = tx.objectStore('restaurants')
@@ -144,7 +143,7 @@ window.DBHelper = {
         cuisines.push(cursor.key)
         return cursor.continue().then(cursorIterate)
       })
-    }).then(cuisines => callback(null, cuisines)).catch(error => callback(error, null))
+    })
   },
 
   /**
@@ -213,19 +212,18 @@ window.DBHelper = {
     } return this._reviewsPromise
   },
 
-  fetchReviewsByRestaurantId (id, callback) {
-    this.fetchReviews(id)
+  fetchReviewsByRestaurantId (id) {
+    return this.fetchReviews(id)
       .then(db => {
         const tx = db.transaction('reviews')
         const reviews = tx.objectStore('reviews')
 
         return reviews.index('restaurant').getAll(+id)
-      }).then(reviews => callback(null, reviews))
-      .catch(error => callback(error, null))
+      })
   },
 
-  submitReview (review, callback) {
-    new Promise((resolve, reject) => {
+  submitReview (review) {
+    const submitPromise = new Promise((resolve, reject) => {
       try { resolve(JSON.stringify(review)) } catch (error) { reject(error) }
     })
       .then(review => window.fetch(this.DATABASE_URL + 'reviews/', {
@@ -233,14 +231,15 @@ window.DBHelper = {
         method: 'POST'
       }))
       .then(response => response.ok ? response.json() : Promise.reject(Error('Failed!')))
-      .then(review => callback(null, review) || review)
-      .then(review => this.DB_PROMISE.then(db => {
-        const tx = db.transaction('reviews', 'readwrite')
-        const reviews = tx.objectStore('reviews')
-        reviews.put(review)
-        return tx.complete
-      }))
-      .catch(error => callback(error, null))
+
+    submitPromise.then(review => this.DB_PROMISE.then(db => {
+      const tx = db.transaction('reviews', 'readwrite')
+      const reviews = tx.objectStore('reviews')
+      reviews.put(review)
+      return tx.complete
+    }))
+
+    return submitPromise
   }
   /* end  : reviews */
 }
