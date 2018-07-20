@@ -108,7 +108,7 @@ const createReviewHTML = review => {
   li.appendChild(name)
 
   const date = document.createElement('p')
-  date.innerHTML = review.date
+  date.innerHTML = `Created ${sanitize(review.createdAt)}. Last updated ${sanitize(review.updatedAt)}`
   li.appendChild(date)
 
   const rating = document.createElement('p')
@@ -120,6 +120,24 @@ const createReviewHTML = review => {
   li.appendChild(comments)
 
   return li
+}
+
+/* Sanitizing Date */
+function sanitize (timestamp) {
+  const diff = Math.floor((new Date() - new Date(timestamp)) / 1000)
+  let value
+  if ((value = Math.floor(diff / (3600 * 24 * 360)))) return ago(value, 'year')
+  else if ((value = Math.floor(diff / (3600 * 24 * 30)))) return ago(value, 'month')
+  else if ((value = Math.floor(diff / (3600 * 24 * 7)))) return ago(value, 'week')
+  else if ((value = Math.floor(diff / (3600 * 24)))) return ago(value, 'day')
+  else if ((value = Math.floor(diff / 3600))) return ago(value, 'hour')
+  else if ((value = Math.floor(diff / 60))) return ago(value, 'minute')
+  else if (diff) return ago(diff, 'second')
+  else return 'just now'
+}
+
+function ago (value, name) {
+  return `${value} ${name + (value === 1 ? '' : 's')} ago`
 }
 
 /**

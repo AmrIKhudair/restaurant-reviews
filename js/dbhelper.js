@@ -23,6 +23,7 @@ window.DBHelper = {
           case 1:
             const reviews = upgradeDB.createObjectStore('reviews', {keyPath: 'id'})
             reviews.createIndex('restaurant', 'restaurant_id')
+            upgradeDB.createObjectStore('pending_reviews')
         }
       })
     } return this._dbPromise
