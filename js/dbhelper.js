@@ -47,8 +47,6 @@ window.DBHelper = {
           }),
           () => {}
         ).then(() => this.DB_PROMISE)
-
-      this._fetchPromise.then(() => this.checkPending(true))
     } return this._fetchPromise
   },
 

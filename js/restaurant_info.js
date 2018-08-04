@@ -19,13 +19,23 @@ window.initMap = () => {
 /**
  * Get current restaurant from page URL.
  */
+
+let pendingHandler
+
 const fetchRestaurantFromURL = async (callback) => {
   if (restaurant) return restaurant
   const id = getParameterByName('id')
   if (!id) throw Error('No restaurant id in URL')
   restaurant = await window.DBHelper.fetchRestaurantById(id)
   fillRestaurantHTML()
-  window.DBHelper.fetchReviewsByRestaurantId(id).then(fillReviewsHTML).catch(console.error)
+  await window.DBHelper.fetchReviewsByRestaurantId(id).then(fillReviewsHTML).catch(console.error)
+  window.DBHelper.getPending().then(pending => {
+    pendingHandler = new PendingHandler(
+      document.getElementById('reviews-list'),
+      createReviewHTML,
+      pending
+    )
+  }).then(() => window.DBHelper.checkPending(true))
   return restaurant
 }
 
@@ -179,9 +189,10 @@ const getParameterByName = (name, url) => {
 }
 
 /* handling reviews */
-class Pending extends Map {
-  constructor (wrapper, creator) {
+class PendingHandler extends Map {
+  constructor (wrapper, creator, pending = null) {
     super()
+
     switch (true) {
       case wrapper instanceof window.HTMLElement: this._wrapper = wrapper
         /* falls through */
@@ -190,6 +201,8 @@ class Pending extends Map {
       case true: break
       default: throw TypeError()
     }
+
+    if (pending != null) for (const [key, review] of pending) this.set(key, review)
   }
 
   set (key, review) {
@@ -210,8 +223,6 @@ class Pending extends Map {
   }
 }
 
-const pending = new Pending(document.getElementById('reviews-list'), createReviewHTML)
-
 function handleSubmit (e) {
   e.preventDefault()
   const form = e.target
@@ -231,11 +242,11 @@ function handleSubmit (e) {
 }
 
 window.DBHelper.onpending = (key, review) => {
-  if (review.restaurant_id === restaurant.id) pending.set(key, review)
+  if (review.restaurant_id === restaurant.id) pendingHandler.set(key, review)
 }
 
 window.DBHelper.onpublish = (key, review) => {
-  if (review.restaurant_id === restaurant.id) pending.delete(key, review)
+  if (review.restaurant_id === restaurant.id) pendingHandler.delete(key, review)
 }
 
 document.getElementById('form').addEventListener('submit', handleSubmit)
