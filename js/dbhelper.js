@@ -47,6 +47,8 @@ window.DBHelper = {
           }),
           () => {}
         ).then(() => this.DB_PROMISE)
+
+      this._fetchPromise.then(() => this.checkPending(true))
     } return this._fetchPromise
   },
 
@@ -228,7 +230,7 @@ window.DBHelper = {
       })
   },
 
-  submitReview (reviewStub, retrying = false) {
+  submitReview (reviewStub, key = null) {
     const submitPromise = new Promise((resolve, reject) => {
       try { resolve(JSON.stringify(reviewStub)) } catch (error) { reject(error) }
     })
@@ -245,53 +247,52 @@ window.DBHelper = {
       return tx.complete
     }))
 
-    if (!retrying) {
-      submitPromise.catch(() => this.DB_PROMISE.then(db => {
+    if (this.onpublish instanceof Function) {
+      submitPromise.then(review => this.onpublish(key, review))
+    }
+
+    if (key == null) {
+      submitPromise.catch(() => this.DB_PROMISE.then(async db => {
         const tx = db.transaction('pending_reviews', 'readwrite')
         const pending = tx.objectStore('pending_reviews')
-        pending.put(reviewStub)
-        return tx.complete.then(() => this.checkPending(reviewStub['restaurant_id']))
+        const key = await pending.put(reviewStub)
+        this.onpending(key, reviewStub)
+        /* FIXME: make it checkPending always on failure and for all restaurants */
+        return tx.complete.then(() => this.checkPending())
       }))
-    }
+    } else submitPromise.then(() => this.clearPending(key))
 
     return submitPromise
   },
 
-  checkPending (id) {
-    if (this.onretrywait instanceof Function) this.onretrywait()
-    return wait(5000).then(() => this.getPending(+id).then(reviews => {
+  checkPending (now = false) {
+    return (now ? Promise.resolve() : wait(5000)).then(() => this.getPending().then(reviews => {
       let iteration
 
       const iterate = () => new Promise((resolve, reject) => {
         iteration = reviews.next()
-        if (iteration.done) {
-          if (this.ondone instanceof Function) this.ondone()
-          return
-        }
-        console.log(iteration)
+        if (iteration.done) resolve()
         const [key, review] = iteration.value
-        const submitPromise = this.submitReview(review, true)
-        submitPromise.catch(() => resolve(this.checkPending(+id)))
+        const submitPromise = this.submitReview(review, key)
+        submitPromise.catch(() => resolve(this.checkPending()))
         submitPromise
-          .then(() => this.clearPending(key))
           .then(() => resolve(iterate()))
           .catch(reject)
       })
 
-      if (this.onretrying instanceof Function) this.onretrying()
       return iterate()
     }))
   },
 
-  getPending (id) {
+  getPending () {
     return this.DB_PROMISE.then(db => {
       const tx = db.transaction('pending_reviews')
       const pending = tx.objectStore('pending_reviews')
       const map = new Map()
 
-      pending.index('restaurant').openCursor(+id).then(function cursorIterator (cursor) {
+      pending.index('restaurant').openCursor().then(function cursorIterator (cursor) {
         if (!cursor) return
-        map.set(cursor.key, cursor.value)
+        map.set(cursor.primaryKey, cursor.value)
         return cursor.continue().then(cursorIterator)
       })
 
@@ -308,10 +309,9 @@ window.DBHelper = {
     })
   },
 
-  /* user provided: onretrywait, onretrying, ondone */
-  onretrywait () { console.log('onretrywait') },
-  onretrying () { console.log('onretrying') },
-  ondone () { console.log('ondone') }
+  /* user provided: onpublished, onpending */
+  onpublish () { console.log('onpublish') },
+  onpending () { console.log('onpending') }
 
   /* end  : reviews */
 }

@@ -34,10 +34,10 @@ const fetchRestaurantFromURL = async (callback) => {
  */
 const fillRestaurantHTML = (_restaurant = restaurant) => {
   const name = document.getElementById('restaurant-name')
-  name.innerHTML = _restaurant.name
+  name.textContent = _restaurant.name
 
   const address = document.getElementById('restaurant-address')
-  address.innerHTML = _restaurant.address
+  address.textContent = _restaurant.address
 
   const image = document.getElementById('restaurant-img')
   image.className = 'restaurant-img'
@@ -49,7 +49,7 @@ const fillRestaurantHTML = (_restaurant = restaurant) => {
   image.alt = _restaurant.name
 
   const cuisine = document.getElementById('restaurant-cuisine')
-  cuisine.innerHTML = _restaurant.cuisine_type
+  cuisine.textContent = _restaurant.cuisine_type
 
   // fill operating hours
   if (_restaurant.operating_hours) {
@@ -69,11 +69,11 @@ const fillRestaurantHoursHTML = (operatingHours = restaurant.operating_hours) =>
     const row = document.createElement('tr')
 
     const day = document.createElement('td')
-    day.innerHTML = key
+    day.textContent = key
     row.appendChild(day)
 
     const time = document.createElement('td')
-    time.innerHTML = operatingHours[key]
+    time.textContent = operatingHours[key]
     row.appendChild(time)
 
     hours.appendChild(row)
@@ -88,7 +88,7 @@ const fillReviewsHTML = (reviews = restaurant.reviews) => {
 
   if (!reviews) {
     const noReviews = document.createElement('p')
-    noReviews.innerHTML = 'No reviews yet!'
+    noReviews.textContent = 'No reviews yet!'
     container.appendChild(noReviews)
     return
   }
@@ -101,22 +101,24 @@ const fillReviewsHTML = (reviews = restaurant.reviews) => {
 /**
  * Create review HTML and add it to the webpage.
  */
-const createReviewHTML = review => {
+const createReviewHTML = (review, key) => {
   const li = document.createElement('li')
+  if (key != null) li.id = 'pending' + key
+
   const name = document.createElement('p')
-  name.innerHTML = review.name
+  name.textContent = review.name
   li.appendChild(name)
 
   const date = document.createElement('p')
-  date.innerHTML = `Created ${sanitize(review.createdAt)}. Last updated ${sanitize(review.updatedAt)}.`
+  date.textContent = review.createdAt ? `Created ${sanitize(review.createdAt)}. Last updated ${sanitize(review.updatedAt)}.` : 'Will be created once you connect to the internet.'
   li.appendChild(date)
 
   const rating = document.createElement('p')
-  rating.innerHTML = `Rating: ${stars(review.rating)}`
+  rating.textContent = `Rating: ${stars(review.rating)}`
   li.appendChild(rating)
 
   const comments = document.createElement('p')
-  comments.innerHTML = review.comments
+  comments.textContent = review.comments
   li.appendChild(comments)
 
   return li
@@ -124,6 +126,7 @@ const createReviewHTML = review => {
 
 /* Sanitizing Date */
 function sanitize (timestamp) {
+  if (timestamp == null) return
   const diff = Math.floor((new Date() - new Date(timestamp)) / 1000)
   let value
   if ((value = Math.floor(diff / (3600 * 24 * 360)))) return ago(value, 'year')
@@ -152,7 +155,7 @@ function stars (value, max = 5) {
 const fillBreadcrumb = (_restaurant = restaurant) => {
   const breadcrumb = document.querySelector('#breadcrumb > ul')
   const li = document.createElement('li')
-  li.innerHTML = _restaurant.name
+  li.textContent = _restaurant.name
   breadcrumb.appendChild(li)
 }
 
@@ -176,6 +179,39 @@ const getParameterByName = (name, url) => {
 }
 
 /* handling reviews */
+class Pending extends Map {
+  constructor (wrapper, creator) {
+    super()
+    switch (true) {
+      case wrapper instanceof window.HTMLElement: this._wrapper = wrapper
+        /* falls through */
+      case creator instanceof window.Function: this._create = creator
+        /* falls through */
+      case true: break
+      default: throw TypeError()
+    }
+  }
+
+  set (key, review) {
+    const old = this.get(key)
+    if (old) old.remove()
+    const el = this._create(review)
+    this._wrapper.appendChild(el)
+    return super.set(key, el)
+  }
+
+  delete (key, review = null) {
+    const old = this.get(key)
+    if (review != null) {
+      if (old) old.remove()
+      this._wrapper.appendChild(this._create(review))
+    } else if (old) this._wrapper.removeChild(this.get(key))
+    return super.delete(key)
+  }
+}
+
+const pending = new Pending(document.getElementById('reviews-list'), createReviewHTML)
+
 function handleSubmit (e) {
   e.preventDefault()
   const form = e.target
@@ -189,10 +225,17 @@ function handleSubmit (e) {
   }
   window.DBHelper.submitReview(review).then(review => {
     form.reset()
-    document.getElementById('reviews-list').appendChild(createReviewHTML(review))
   }).catch(console.error).finally(() => {
     for (const element of elements) element.removeAttribute('disabled')
   })
+}
+
+window.DBHelper.onpending = (key, review) => {
+  if (review.restaurant_id === restaurant.id) pending.set(key, review)
+}
+
+window.DBHelper.onpublish = (key, review) => {
+  if (review.restaurant_id === restaurant.id) pending.delete(key, review)
 }
 
 document.getElementById('form').addEventListener('submit', handleSubmit)
