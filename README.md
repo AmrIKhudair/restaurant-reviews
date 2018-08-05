@@ -6,23 +6,27 @@
 
 install production dependencies:
 
-    npm install --only=production
+    yarn install --prod
 
 ## Development
 
 ### Installing Dependencies
 
-    $ npm install
-    # npm install gulp-cli --global
+    yarn install --dev
+    yarn glonal add gulp-cli
+
+Note: Don't forget to add yarn bin folder to your PATH, know it from:
+
+    yarn global bin
 
 ### Optimizing Images
 
 In case you need to re-optimize images run:
 
-    npm run clean && npm run build
+    yarn run clean && yarn run build
 
 ### Serving
 
 In case you need to run development server:
 
-    npm run serve
+    yarn run serve

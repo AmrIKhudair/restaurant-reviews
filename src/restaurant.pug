@@ -1,0 +1,80 @@
+extends _layout.pug
+
+block title
+    | Restaurant Info
+
+block body
+    - const classList = 'inside'
+
+block header
+    //- breadcrumb
+    nav#breadcrumb(aria-label='Breadcrumb'): ul: li: a(href='/') Home
+
+block main
+    section#restaurant-container(aria-labelledby='restaurant-name' tabindex=0)
+        h2#restaurant-name Loading...
+        img#restaurant-img
+        p#restaurant-cuisine
+        p#restaurant-address
+        table#restaurant-hours(aria-label='Restaurant Hours')
+
+    section#reviews-container(aria-label='Reviews')
+        h3 Reviews
+        ul#reviews-list
+        aside
+            h4 Submit Your Review
+            form#form
+                table.full-width
+                    mixin input(type)
+                        case type
+                            when 'textarea': textarea&attributes(attributes): block
+                            when 'select': select&attributes(attributes): block
+                            default: input(type=type)&attributes(attributes)
+
+                    -
+                        const stars = n => {
+                            let r = {}
+                            for (let i = 0; i <= n; i++) {
+                                const option = []
+                                for (let j = 0; j < n; j++) option.push(j <= i ? '★' : '☆')
+                                r[i] = option.join('')
+                            } return r
+                        }
+
+                        const inputs = [
+                            {
+                                name: 'name',
+                                type: 'text',
+                                placeholder: 'Your name goes here'
+                            },
+                            {
+                                name: 'rating',
+                                type: 'select',
+                                options: stars(5)
+                            },
+                            {
+                                name: 'comments',
+                                type: 'textarea',
+                                placeholder: 'Your commnets go here...'
+                            }
+                        ]
+
+                    each input in inputs
+                        - const name = input.name
+                        tr
+                            td: label(for=name)= name[0].toUpperCase() + name.slice(1) + ':'
+                            td: +input(input.type).full-width.form-control(
+                                id=name
+                                name=name
+                                placeholder=input.placeholder
+                            )
+                                if input.options
+                                    each option, value in input.options
+                                        option(value=value)= option
+                input#submit.full-width.form-control(type='submit' disabled)
+
+
+
+
+block scripts
+    script(src='/js/restaurant_info.js')

@@ -1,0 +1,49 @@
+doctype html
+html(lang='en-US')
+    head
+        //- Fix charset
+        meta(charset='utf-8')
+
+        //- Metas
+        -
+            const metas = {
+                'viewport': 'width=device-width, initial-scale=1',
+                'theme-color': '#252831'
+            }
+        each content, name in metas
+            meta(name=name content=content)
+
+        //- Web Wpp Manifest
+        link(rel='manifest' href='/manifest.json')
+
+        //- Stylesheets
+        link(rel='stylesheet' href='/css/styles.css')
+
+        //- Page Title
+        title: block title
+
+    block body
+    body(class=classList)
+        //- Header
+        header
+            nav: h1: a(href='/') Restaurant Reviews
+            block header
+
+        //- Main content
+        main#maincontent
+            //- Map wrapper, hidden from the blind
+            aside#map-container(aria-hidden='true')
+                //- Link to skip map controlls for keyboard users
+                a#skipMap(href='#restaurants') Skip map controls
+                //- The map div
+                #map(role='application')
+
+            block main
+
+        //- Footer
+        footer#footer
+            | Copyright (c) 2017 #[a(href='/'): strong Restaurant Reviews] All Rights Reserved.
+
+        block scripts
+
+        script(async defer src!='https://maps.googleapis.com/maps/api/js?key=AIzaSyBrt4bFYrx1JU0r5vA-4SrBHHfWZQ-QA6Q&callback=initMap')

@@ -1,0 +1,32 @@
+extends _layout.pug
+
+block title
+    | Restaurant Reviews
+
+block main
+    section#restaurants(aria-label='Restaurants')
+        //- Filter restaurants
+        aside.filter-options(aria-label='Filter Restaurants')
+            h2 Filter Results
+            each select in ['neighborhood', 'cuisine']
+                - const Select = select[0].toUpperCase() + select.slice(1)
+                select(
+                    id=`${select}s-select`
+                    name=`${select}s`
+                    aria-label=Select
+                ): option(value='all') All #{Select}s
+
+        ul#restaurants-list
+
+block scripts
+    script(src='/js/main.js')
+
+
+
+
+
+
+
+
+
+
