@@ -24,7 +24,7 @@
   },
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "gulp images",
+    "build": "gulp build",
     "serve": "gulp serve"
   },
   "repository": {

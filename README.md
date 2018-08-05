@@ -2,31 +2,23 @@
 
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-## Production
-
-install production dependencies:
-
-    yarn install --prod
-
-## Development
-
-### Installing Dependencies
+## Installing Dependencies
 
     yarn install --dev
     yarn glonal add gulp-cli
 
-Note: Don't forget to add yarn bin folder to your PATH, know it from:
+Note: Don't forget to add yarn global bin folder to your PATH, know it from:
 
     yarn global bin
 
-### Optimizing Images
+## Building Project
 
-In case you need to re-optimize images run:
+    yarn run build
 
-    yarn run clean && yarn run build
+## Cleaning Project
 
-### Serving
+    yarn run clean
 
-In case you need to run development server:
+## Serving Project
 
     yarn run serve
