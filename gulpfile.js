@@ -33,7 +33,8 @@ gulp.task('serve', ['build'], () => {
     }
   })
 
-  return gulp.watch('*.html').on('change', browserSync.reload)
+  gulp.watch('src/**/*', ['build'])
+  return gulp.watch('dist/*.html').on('change', browserSync.reload)
 })
 
 gulp.task('html', () => {
