@@ -1,4 +1,5 @@
-const DBHelper = require('./_dbhelper')
+const DBHelper = window.DBHelper
+
 let restaurants,
   neighborhoods,
   cuisines

@@ -1,4 +1,5 @@
-const DBHelper = require('./_dbhelper')
+const DBHelper = window.DBHelper
+
 let restaurant
 var map
 
@@ -46,6 +47,8 @@ const fetchRestaurantFromURL = async (callback) => {
 const fillRestaurantHTML = (_restaurant = restaurant) => {
   const name = document.getElementById('restaurant-name')
   name.textContent = _restaurant.name
+
+  favorite(_restaurant.is_favorite)
 
   const address = document.getElementById('restaurant-address')
   address.textContent = _restaurant.address
@@ -251,3 +254,15 @@ DBHelper.onpublish = (key, review) => {
 }
 
 document.getElementById('form').addEventListener('submit', handleSubmit)
+
+/* favorite */
+const favorite = val => {
+  if (val == null) return restaurant.is_favorite
+  restaurant.is_favorite = Boolean(val)
+  document.getElementById('restaurant-favorite').textContent = val ? '★' : '☆'
+}
+
+document.getElementById('restaurant-favorite').addEventListener('click', e => {
+  e.preventDefault()
+  window.DBHelper.favorite(restaurant.id, !favorite()).then(favorite)
+})

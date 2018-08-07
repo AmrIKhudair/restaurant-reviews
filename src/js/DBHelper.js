@@ -1,13 +1,13 @@
 /**
  * Common database helper functions.
  */
-module.exports = {
+window.DBHelper = {
   /**
    * Database URL.
    * Change this to restaurants.json file location on your server.
    */
   get DATABASE_URL () {
-    return '//localhost:1337/'
+    return '//localhost:1337'
   },
 
   get DB_PROMISE () {
@@ -32,7 +32,7 @@ module.exports = {
 
   fetch (id) {
     if (!(this._fetchPromise instanceof Promise)) {
-      this._fetchPromise = window.fetch(this.DATABASE_URL + 'restaurants/' + (id || ''))
+      this._fetchPromise = window.fetch(`${this.DATABASE_URL}/restaurants/${id || ''}`)
         .then(response => response.json())
         .then(
           data => this.DB_PROMISE.then(db => {
@@ -201,7 +201,7 @@ module.exports = {
   /* start: reviews */
   fetchReviews (id) {
     if (!(this._reviewsPromise instanceof Promise)) {
-      this._reviewsPromise = window.fetch(this.DATABASE_URL + 'reviews/?restaurant_id=' + id)
+      this._reviewsPromise = window.fetch(`${this.DATABASE_URL}/reviews/?restaurant_id=${id}`)
         .then(response => response.json())
         .then(
           data => this.DB_PROMISE.then(db => {
@@ -232,7 +232,7 @@ module.exports = {
     const submitPromise = new Promise((resolve, reject) => {
       try { resolve(JSON.stringify(reviewStub)) } catch (error) { reject(error) }
     })
-      .then(review => window.fetch(this.DATABASE_URL + 'reviews/', {
+      .then(review => window.fetch(`${this.DATABASE_URL}/reviews/`, {
         body: review,
         method: 'POST'
       }))
@@ -308,10 +308,25 @@ module.exports = {
   },
 
   /* user provided: onpublished, onpending */
-  onpublish () { console.log('onpublish') },
-  onpending () { console.log('onpending') }
+  onpublish: void 0,
+  onpending: void 0,
 
   /* end  : reviews */
+
+  /* favourite restaurants */
+  favorite (id, val = true) {
+    return new Promise(resolve => resolve(JSON.stringify({is_favorite: val})))
+      .then(body => window.fetch(`${this.DATABASE_URL}/restaurants/${id}`, {
+        body: body,
+        method: 'PUT'
+      }))
+      .then(response => response.ok ? response.json() : Promise.reject(response))
+      .then(restaurant => this._dbPromise.then(db => {
+        const tx = db.transaction('restaurants', 'readwrite')
+        tx.objectStore('restaurants').put(restaurant)
+        return tx.complete.then(() => restaurant.is_favorite)
+      }))
+  }
 }
 
 const wait = time => new Promise(resolve => setTimeout(resolve, time))

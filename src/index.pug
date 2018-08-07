@@ -3,7 +3,7 @@ extends _layout.pug
 block title
     | Restaurant Reviews
 
-block main
+append main
     section#restaurants(aria-label='Restaurants')
         //- Filter restaurants
         aside.filter-options(aria-label='Filter Restaurants')
@@ -18,7 +18,7 @@ block main
 
         ul#restaurants-list
 
-block scripts
+append scripts
     script(src='/js/main.js')
 
 

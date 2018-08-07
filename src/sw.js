@@ -9,6 +9,7 @@ self.addEventListener('install', e => {
     '/',
     '/restaurant.html',
     '/css/styles.css',
+    '/js/DBHelper.js',
     '/js/main.js',
     '/js/restaurant_info.js'
   ]
@@ -28,7 +29,7 @@ self.addEventListener('activate', e => e.waitUntil(self.clients.claim()))
 self.addEventListener('fetch', e => e.respondWith(
   self.fetch(e.request).then(
     response => {
-      if (new URL(e.request.url).host !== 'localhost:1337') {
+      if (e.request.method === 'GET' && new URL(e.request.url).host !== 'localhost:1337') {
         CACHE_PROMISE.then(cache => cache.put(makeCachable(e.request), response))
       }
       return response.clone()

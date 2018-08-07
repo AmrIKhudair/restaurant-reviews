@@ -3,16 +3,17 @@ extends _layout.pug
 block title
     | Restaurant Info
 
-block body
-    - const classList = 'inside'
+block definitions
+    - const bodyClass = 'inside'
 
-block header
+append header
     //- breadcrumb
     nav#breadcrumb(aria-label='Breadcrumb'): ul: li: a(href='/') Home
 
-block main
+append main
     section#restaurant-container(aria-labelledby='restaurant-name' tabindex=0)
         h2#restaurant-name Loading...
+        a#restaurant-favorite(href='#') ☆
         img#restaurant-img
         p#restaurant-cuisine
         p#restaurant-address
@@ -76,5 +77,5 @@ block main
 
 
 
-block scripts
+append scripts
     script(src='/js/restaurant_info.js')
