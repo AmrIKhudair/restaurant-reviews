@@ -208,6 +208,7 @@ const createRestaurantHTML = restaurant => {
       favorite.textContent = star(val)
     })
   })
+  favorite.setAttribute('aria-role', 'button')
   fragment.appendChild(favorite)
 
   const more = document.createElement('a')
