@@ -238,9 +238,8 @@ function handleSubmit (e) {
     rating: +elements['rating'].value,
     comments: elements['comments'].value
   }
-  DBHelper.submitReview(review).then(review => {
+  DBHelper.submitReview(review).catch(console.error).finally(() => {
     form.reset()
-  }).catch(console.error).finally(() => {
     for (const element of elements) element.removeAttribute('disabled')
   })
 }
