@@ -18,8 +18,8 @@ html(lang='en-US')
             //- Web Wpp Manifest
             link(rel='manifest' href='/manifest.json')
 
-            //- Stylesheets
-            link(rel='stylesheet' href='/css/styles.css')
+            block Stylesheets
+                link#styles(rel='stylesheet' href='/css/styles.css' disabled)
 
             //- Page Title
             title: block title
@@ -47,6 +47,7 @@ html(lang='en-US')
                     | Copyright (c) 2017 #[a(href='/'): strong Restaurant Reviews] All Rights Reserved.
 
             block scripts
-                script(async defer src!='https://maps.googleapis.com/maps/api/js?key=AIzaSyBrt4bFYrx1JU0r5vA-4SrBHHfWZQ-QA6Q&callback=initMap')
                 script(src="/js/DBHelper.js")
+
+
 

@@ -286,7 +286,7 @@ nav:first-child h1 a {
   /* removed min height */
 }
 
-#restaurants-list li h1 {
+#restaurants-list li h2 {
   color: #f18200;
   font-family: Arial, sans-serif;
   font-size: 14pt;
@@ -313,7 +313,7 @@ nav:first-child h1 a {
   text-decoration: none;
   text-transform: uppercase;
   /* fix margin and padding */
-  margin: 1em 0 0;
+  margin: 1em;
   padding: 0.5em 2em 1em;
 }
 

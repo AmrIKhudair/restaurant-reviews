@@ -3,22 +3,26 @@ const plumber = require('gulp-plumber')
 const newer = require('gulp-newer')
 const browserSync = require('browser-sync').create()
 
+const task = (...args) => {
+  if (args.length === 2 && !(args[1] instanceof Array)) [args[1], args[2]] = [['sw'], args[1]]
+  return gulp.task(...args)
+}
 const src = (...args) => gulp.src(...args).pipe(plumber())
 
 const srcs = new Map([
   ['copy', ['src/icons', 'src/manifest.json']],
-  ['css', ['node_modules/normalize.css/normalize.css', 'src/css/*.css']],
-  ['html', ['src/*.pug', '!src/_*.pug']],
-  ['images', 'src/img/*.jpg'],
+  ['css', ['src/css/*.css']],
+  ['html', ['src/*.pug', '!**/_*.pug']],
+  ['images', ['src/img/*.jpg']],
   ['js', ['src/js/*.js', '!**/_*.js']],
-  ['sw', 'src/sw.js']
+  ['sw', ['src/sw.js']]
 ])
 
-gulp.task('build', Array.from(srcs.keys()))
+task('build', Array.from(srcs.keys()))
 
-gulp.task('copy', () => src(srcs.get('copy')).pipe(newer('dist')).pipe(gulp.dest('dist')))
+task('copy', () => src(srcs.get('copy')).pipe(newer('dist')).pipe(gulp.dest('dist')))
 
-gulp.task('css', () => {
+task('css', () => {
   const minify = require('gulp-minify-css')
   const autoprefixer = require('gulp-autoprefixer')
   const concat = require('gulp-concat')
@@ -31,7 +35,7 @@ gulp.task('css', () => {
     .pipe(gulp.dest('dist/css'))
 })
 
-gulp.task('html', () => {
+task('html', () => {
   const pug = require('gulp-pug')
   return (
     src(srcs.get('html'))
@@ -41,7 +45,7 @@ gulp.task('html', () => {
   )
 })
 
-gulp.task('images', () => {
+task('images', () => {
   const resize = require('gulp-image-resize')
   const imagemin = require('gulp-imagemin')
   const rename = require('gulp-rename')
@@ -62,30 +66,23 @@ gulp.task('images', () => {
   return merge(streams)
 })
 
-const js = new Map([
-  ['js', ['dist/js', ['sw']]],
-  ['sw', ['dist', []]]
-])
+task('js', () => {
+  const named = require('vinyl-named')
+  const webpack = require('webpack-stream')
 
-for (const [name, [dest, deps]] of js) {
-  gulp.task(name, deps, () => {
-    const named = require('vinyl-named')
-    const webpack = require('webpack-stream')
+  return (
+    src(srcs.get('js'))
+      .pipe(newer('dist/js'))
+      .pipe(named())
+      .pipe(webpack({
+        devtool: 'source-map',
+        mode: 'production'
+      }, require('webpack')))
+      .pipe(gulp.dest('dist/js'))
+  )
+})
 
-    return (
-      src(srcs.get(name))
-        .pipe(newer(dest))
-        .pipe(named())
-        .pipe(webpack({
-          devtool: 'source-map',
-          mode: 'production'
-        }))
-        .pipe(gulp.dest(dest))
-    )
-  })
-}
-
-gulp.task('serve', ['build'], () => {
+task('serve', ['build'], () => {
   const compression = require('compression')
 
   const watch = done => {
@@ -101,13 +98,31 @@ gulp.task('serve', ['build'], () => {
 
   browserSync.init({
     server: {
-      baseDir: './dist',
+      baseDir: 'dist',
       middleware: (request, response, next) => compression()(request, response, next)
 
     }
   })
 
-  for (const [name, src] of srcs) gulp.watch(src, watchTask(name))
+  const watchSrcs = Array.from(srcs).map(
+    ([name, src]) => [name, src.filter(src => !src.startsWith('!**/_*.'))]
+  )
+
+  for (const [name, src] of watchSrcs) gulp.watch(src, watchTask(name))
 
   gulp.watch('dist/*.html').on('change', browserSync.reload)
+})
+
+gulp.task('sw', () => {
+  const header = require('gulp-header')
+  const hash = require('random-hash').generateHash
+  const sourcemaps = require('gulp-sourcemaps')
+  const uglify = require('gulp-uglifyes')
+
+  return src(srcs.get('sw'))
+    .pipe(header(`self.CACHE_NAME = '${hash()}'`))
+    .pipe(sourcemaps.init())
+    .pipe(uglify())
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest('dist'))
 })

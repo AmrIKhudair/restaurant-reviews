@@ -30,6 +30,15 @@ window.DBHelper = {
     } return this._dbPromise
   },
 
+  fromCached (id) {
+    return this.DB_PROMISE.then(db => {
+      const tx = db.transaction('restaurants')
+      const restaurants = tx.objectStore('restaurants')
+      const data = id ? restaurants.get(+id) : restaurants.getAll()
+      return tx.complete.then(() => data)
+    })
+  },
+
   fetch (id) {
     if (!(this._fetchPromise instanceof Promise)) {
       this._fetchPromise = window.fetch(`${this.DATABASE_URL}/restaurants/${id || ''}`)
@@ -61,13 +70,7 @@ window.DBHelper = {
 
   /* fix: fetch a single restaurant from api */
   fetchRestaurantById (id) {
-    return this.fetch(id)
-      .then(db => {
-        const tx = db.transaction('restaurants')
-        const restaurants = tx.objectStore('restaurants')
-        const data = id ? restaurants.get(+id) : restaurants.getAll()
-        return tx.complete.then(() => data)
-      })
+    return this.fetch(id).then(() => this.fromCached(id))
   },
 
   /**
@@ -337,3 +340,10 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js')
   })
 }
+
+window.addEventListener('load', () => {
+  document.getElementById('styles').disabled = false
+  const head = document.createElement('script')
+  head.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBrt4bFYrx1JU0r5vA-4SrBHHfWZQ-QA6Q&callback=initMap'
+  document.body.appendChild(head)
+})
