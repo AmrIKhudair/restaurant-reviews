@@ -485,3 +485,7 @@ nav:first-child h1 a {
   resize: vertical;
   padding: 1em;
 }
+
+form {
+  margin-bottom: 1em
+}
