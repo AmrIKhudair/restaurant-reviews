@@ -353,7 +353,7 @@ nav:first-child h1 a {
 #restaurant-favorite {
   color: #784100;
   font-family: Arial, sans-serif;
-  font-size: 20pt;
+  font-size: 1.5em;
   font-weight: 200;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -368,6 +368,7 @@ nav:first-child h1 a {
 
 #restaurant-favorite {
   float: right;
+  text-align: right;
 }
 
 #restaurant-img {
