@@ -172,7 +172,7 @@ window.DBHelper = {
    * Restaurant image URL.
    */
   imageUrlForRestaurant (restaurant) {
-    return this._widthFile(restaurant.photograph, 800)
+    return this._widthFile(restaurant.photograph || restaurant.id, 800)
   },
 
   /**
@@ -182,7 +182,7 @@ window.DBHelper = {
   imageSrcsetForRestaurant (restaurant) {
     const srcset = []
 
-    for (let width = 300; width <= 800; width += 100) { srcset.push(`${this._widthFile(restaurant.photograph, width)} ${width}w`) }
+    for (let width = 300; width <= 800; width += 100) { srcset.push(`${this._widthFile(restaurant.photograph || restaurant.id, width)} ${width}w`) }
 
     return srcset.join(', ')
   },
@@ -258,7 +258,6 @@ window.DBHelper = {
         const pending = tx.objectStore('pending_reviews')
         const key = await pending.put(reviewStub)
         this.onpending(key, reviewStub)
-        /* FIXME: make it checkPending always on failure and for all restaurants */
         return tx.complete.then(() => this.checkPending())
       }))
     } else submitPromise.then(() => this.clearPending(key))
@@ -333,13 +332,6 @@ window.DBHelper = {
 }
 
 const wait = time => new Promise(resolve => setTimeout(resolve, time))
-
-/* register the service worker */
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('/sw.js')
-  })
-}
 
 window.addEventListener('load', () => {
   document.getElementById('styles').disabled = false

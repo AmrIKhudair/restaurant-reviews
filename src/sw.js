@@ -9,26 +9,23 @@ const RESOURCES = [
   '/index.html',
   '/restaurant.html',
   '/css/styles.css',
-  '/js/DBHelper.js',
+  '/js/common.js',
   '/js/main.js',
   '/js/restaurant_info.js'
 ]
 
 /* cache resources on install */
-self.addEventListener('install', e => {
-  e.waitUntil(Promise.all([
-    caches.keys()
-      .then(keys => keys.filter(key => key !== self.CACHE_NAME).map(key => caches.delete(key)))
-      .then(promises => Promise.all(promises)),
-    CACHE_PROMISE.then(cache => cache.addAll(RESOURCES)),
-    self.skipWaiting()
-  ]))
-})
+self.addEventListener('install', e => e.waitUntil(
+  CACHE_PROMISE.then(cache => cache.addAll(RESOURCES))
+))
 
-self.addEventListener('activate', e => e.waitUntil(self.clients.claim()))
+self.addEventListener('activate', e => e.waitUntil(caches.keys().then(keys => keys.forEach(key => {
+  if (key !== self.CACHE_NAME) caches.delete(key)
+}))))
 
 /* Hijacking fetch requests */
 self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return
   const url = new URL(e.request.url)
   if (url.href.endsWith('.woff2')) return e.respondWith(new NotFoundResponse())
   e.respondWith(caches.match(makeCachable(e.request), {ignoreSearch: true})
@@ -38,12 +35,9 @@ self.addEventListener('fetch', e => {
       () => self.fetch(e.request).then(
         response => {
           if (
-            response.ok &&
-            e.request.method === 'GET' &&
-            url.protocol in ['http', 'https'] &&
-            url.host !== 'localhost:1337' &&
-            !url.path.beginsWith('browser-sync')
-          ) { CACHE_PROMISE.then(cache => cache.put(makeCachable(e.request), response.clone())) }
+            !url.pathname.startsWith('/browser-sync') &&
+            url.protocol.startsWith('http')
+          ) CACHE_PROMISE.then(cache => cache.put(makeCachable(e.request), response))
           return response.clone()
         },
         () => new NotFoundResponse()

@@ -18,6 +18,12 @@ html(lang='en-US')
             //- Web Wpp Manifest
             link(rel='manifest' href='/manifest.json')
 
+            //- register the service worker
+            script
+                | if ('serviceWorker' in navigator) window.addEventListener('load', function () {
+                |        navigator.serviceWorker.register('/sw.js')
+                | })
+
             block Stylesheets
                 link#styles(rel='stylesheet' href='/css/styles.css' disabled)
 
@@ -44,7 +50,8 @@ html(lang='en-US')
             //- Footer
             footer#footer
                 block footer
-                    | Copyright (c) 2017 #[a(href='/'): strong Restaurant Reviews] All Rights Reserved.
+                    | Copyright (c) 2017 #[a(href='/'): strong Restaurant Reviews] All Rights
+                    | Reserved.
 
             block scripts
                 script(src="/js/common.js")

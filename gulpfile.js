@@ -104,13 +104,9 @@ task('serve', ['build'], () => {
     }
   })
 
-  const watchSrcs = Array.from(srcs).map(
-    ([name, src]) => [name, src.filter(src => !src.startsWith('!**/_*.'))]
-  )
-
-  for (const [name, src] of watchSrcs) gulp.watch(src, watchTask(name))
-
-  gulp.watch('dist/*.html').on('change', browserSync.reload)
+  for (const [name, src] of srcs) {
+    gulp.watch(src.filter(src => !src.startsWith('!**/_*.')), watchTask(name))
+  }
 })
 
 gulp.task('sw', () => {
@@ -119,9 +115,10 @@ gulp.task('sw', () => {
   const sourcemaps = require('gulp-sourcemaps')
   const uglify = require('gulp-uglifyes')
 
-  return src(srcs.get('sw'))
+  return gulp.src(srcs.get('sw'))
+    .pipe(sourcemaps.identityMap())
+    .pipe(plumber())
     .pipe(header(`self.CACHE_NAME = '${hash()}'`))
-    .pipe(sourcemaps.init())
     .pipe(uglify())
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('dist'))
