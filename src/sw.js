@@ -15,20 +15,26 @@ const RESOURCES = [
 ]
 
 /* cache resources on install */
-self.addEventListener('install', e => e.waitUntil(
-  CACHE_PROMISE.then(cache => cache.addAll(RESOURCES))
-))
+self.addEventListener('install', e => {
+  self.skipWaiting()
+  e.waitUntil(CACHE_PROMISE.then(cache => cache.addAll(RESOURCES)))
+})
 
-self.addEventListener('activate', e => e.waitUntil(caches.keys().then(keys => keys.forEach(key => {
-  if (key !== self.CACHE_NAME) caches.delete(key)
-}))))
+self.addEventListener('activate', e => {
+  e.waitUntil(Promise.all([
+    caches.keys().then(keys => Promise.all(keys.map(
+      key => key !== self.CACHE_NAME ? caches.delete(key) : null
+    ))),
+    self.clients.claim()
+  ]))
+})
 
 /* Hijacking fetch requests */
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return
   const url = new URL(e.request.url)
   if (url.href.endsWith('.woff2')) return e.respondWith(new NotFoundResponse())
-  e.respondWith(caches.match(makeCachable(e.request), {ignoreSearch: true})
+  e.respondWith(caches.match(e.request)
     .then(response => response || Promise.reject(response))
     .then(
       null,
@@ -40,7 +46,9 @@ self.addEventListener('fetch', e => {
           ) CACHE_PROMISE.then(cache => cache.put(makeCachable(e.request), response))
           return response.clone()
         },
-        () => new NotFoundResponse()
+        () => caches.match(makeCachable(e.request), {ignoreSearch: true}).then(
+          response => response || new NotFoundResponse()
+        )
       )
     ))
 })
