@@ -32,14 +32,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AmrIKhudair-MWS/mws-restaurant-stage-1.git"
+    "url": "git+https://github.com/AmrIKhudair/restaurant-reviews.git"
   },
   "author": "Amr Ibrahim Khudair",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/AmrIKhudair-MWS/mws-restaurant-stage-1/issues"
+    "url": "https://github.com/AmrIKhudair/restaurant-reviews/issues"
   },
-  "homepage": "https://github.com/AmrIKhudair-MWS/mws-restaurant-stage-1#readme",
+  "homepage": "https://github.com/AmrIKhudair/restaurant-reviews#readme",
   "dependencies": {
     "gulp-imagemin": "^4.1.0"
   }
