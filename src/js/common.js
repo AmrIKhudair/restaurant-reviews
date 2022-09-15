@@ -7,7 +7,7 @@ window.DBHelper = {
    * Change this to restaurants.json file location on your server.
    */
   get DATABASE_URL () {
-    return '//localhost:1337'
+    return '//restaurant-reviews-backend.onrender.com/'
   },
 
   get DB_PROMISE () {
