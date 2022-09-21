@@ -7,6 +7,7 @@ import concat from 'gulp-concat'
 import header from 'gulp-header'
 import resize from 'gulp-image-resize'
 import imagemin from 'gulp-imagemin'
+import jimp from 'gulp-jimp'
 import plumber from 'gulp-plumber'
 import pug from 'gulp-pug'
 import minify from 'gulp-minify-css'
@@ -68,19 +69,18 @@ function htmlTask () {
     .pipe(dest('dist'))
 }
 
-const convert = width => src(srcs.get('images'))
-  .pipe(resize({width: width}))
-  .pipe(rename(path => (path.basename += '-' + width + 'w')))
-  .pipe(newer('dist/img'))
-  .pipe(imagemin([
-    imagemin.jpegtran({progressive: true})
-  ]))
+function imagesTask() {
+  const outputs = {}
+  for (let width = 300; width <= 800; width += 100) outputs[`-${width}w`] = { resize: { width } }
 
-  .pipe(gulp.dest('dist/img'))
+  return src(srcs.get('images'))
+    .pipe(jimp(outputs))
+    .pipe(imagemin([
+      imagemin.jpegtran({progressive: true})
+    ]))
 
-const tasks = []
-for (let width = 300; width <= 800; width += 100) { tasks.push( function imageTask() { return convert(width) } ) }
-const imageTasks = parallel(tasks)
+    .pipe(gulp.dest('dist/img'))
+}
 
 function jsTask () {
   return src(srcs.get('js'))
@@ -96,16 +96,16 @@ function jsTask () {
 export const copy = series(sw, copyTask)
 export const css = series(sw, cssTask)
 export const html = series(sw, htmlTask)
-export const images = series(sw, imageTasks)
+export const images = series(sw, imagesTask)
 export const js = series(sw, jsTask)
-export const build = series(sw, parallel(copyTask, cssTask, htmlTask, imageTasks, jsTask))
+export const build = series(sw, parallel(copyTask, cssTask, htmlTask, imagesTask, jsTask))
 
 export const serve = series(build, () => {
   const browserSync = BrowserSync.create()
   const compression = Compression()
 
   function task(name) {
-    const tasks = { copy: copyTask, css: cssTask, html, htmlTask, images, imageTasks, js, sw }
+    const tasks = { copy: copyTask, css: cssTask, html: htmlTask, images: imagesTask, js: jsTask, sw }
     return tasks[name]
   }
 

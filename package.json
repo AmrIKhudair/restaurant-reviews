@@ -12,12 +12,10 @@
     "gulp-autoprefixer": "^5.0.0",
     "gulp-concat": "^2.6.1",
     "gulp-header": "^2.0.5",
-    "gulp-image-resize": "^0.13.0",
     "gulp-minify-css": "^1.2.4",
     "gulp-newer": "^1.4.0",
     "gulp-plumber": "^1.2.0",
     "gulp-pug": "^4.0.1",
-    "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.6.4",
     "gulp-uglifyes": "^0.1.3",
     "idb": "^2.1.2",
@@ -42,6 +40,7 @@
   },
   "homepage": "https://github.com/AmrIKhudair/restaurant-reviews#readme",
   "dependencies": {
-    "gulp-imagemin": "^4.1.0"
+    "gulp-imagemin": "^4.1.0",
+    "gulp-jimp": "^1.2.9"
   }
 }
