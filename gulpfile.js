@@ -20,11 +20,6 @@ import webpackStream from 'webpack-stream'
 
 const { src, dest, parallel, series, watch } = gulp
 
-const task = (...args) => {
-  if (args.length === 2 && !(args[1] instanceof Array)) [args[1], args[2]] = [['sw'], args[1]]
-  return gulp.task(...args)
-}
-
 const srcs = new Map([
   ['copy', ['src/icons/**/*', 'src/manifest.json']],
   ['css', ['src/css/*.css']],
