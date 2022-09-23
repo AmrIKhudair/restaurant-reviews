@@ -37,7 +37,7 @@ export function sw () {
     .pipe(header(`self.CACHE_NAME = '${hash()}'`))
     .pipe(uglify())
     .pipe(sourceMaps.write('.'))
-    .pipe(gulp.dest('dist'))
+    .pipe(dest('dist'))
 }
 
 function copyTask () {
@@ -71,8 +71,7 @@ function imagesTask() {
     .pipe(imagemin([
       imagemin.jpegtran({progressive: true})
     ]))
-
-    .pipe(gulp.dest('dist/img'))
+    .pipe(dest('dist/img'))
 }
 
 function jsTask () {
@@ -83,7 +82,7 @@ function jsTask () {
       devtool: 'source-map',
       mode: 'production'
     }, webpack))
-    .pipe(gulp.dest('dist/js'))
+    .pipe(dest('dist/js'))
 }
 
 export const copy = series(sw, copyTask)
@@ -106,7 +105,6 @@ export const serve = series(build, () => {
     server: {
       baseDir: 'dist',
       middleware: (request, response, next) => compression(request, response, next)
-
     }
   })
 
