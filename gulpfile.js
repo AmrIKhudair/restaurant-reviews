@@ -26,7 +26,7 @@ const task = (...args) => {
 }
 
 const srcs = new Map([
-  ['copy', ['src/icons', 'src/manifest.json']],
+  ['copy', ['src/icons/**/*', 'src/manifest.json']],
   ['css', ['src/css/*.css']],
   ['html', ['src/*.pug', '!**/_*.pug']],
   ['images', ['src/img/*.jpg']],
@@ -46,7 +46,7 @@ export function sw () {
 }
 
 function copyTask () {
-  return src(srcs.get('copy')).pipe(plumber()).pipe(newer('dist')).pipe(dest('dist'))
+  return src(srcs.get('copy'), { base: 'src' }).pipe(plumber()).pipe(newer('dist')).pipe(dest('dist'))
 }
 
 function cssTask () {
