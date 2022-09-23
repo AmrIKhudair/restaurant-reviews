@@ -97,7 +97,7 @@ export const serve = series(build, () => {
   const compression = Compression()
 
   function task(name) {
-    const tasks = { copy: copyTask, css: cssTask, html: htmlTask, images: imagesTask, js: jsTask, sw }
+    const tasks = { copy, css, html, images, js, sw }
     return tasks[name]
   }
 
